@@ -6,6 +6,7 @@
     <title>Carrinho de Compras - Graça Presentes</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="config.js"></script>
     <link rel="stylesheet" href="styles/style.css">
 </head>
 <body class="text-gray-800">
@@ -35,9 +36,21 @@
                     <i data-feather="shopping-cart"></i>
                     <span id="cart-count" class="absolute -top-1 -right-1 bg-pink-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
                 </button>
-                <button class="md:hidden p-2 rounded-full hover:bg-pink-100 transition">
+                <button class="md:hidden p-2 rounded-full hover:bg-pink-100 transition" id="mobile-menu-button">
                     <i data-feather="menu"></i>
                 </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div class="md:hidden hidden bg-white/95 backdrop-blur-sm shadow-xl border-t" id="mobile-menu">
+            <div class="container mx-auto px-4 py-4">
+                <ul class="space-y-3">
+                    <li><a href="index.html" class="block py-3 font-medium text-gray-600 hover:text-pink-600 transition pl-4">Home</a></li>
+                    <li><a href="produtos.html" class="block py-3 font-medium text-gray-600 hover:text-pink-600 transition pl-4">Produtos</a></li>
+                    <li><a href="carrinho.html" class="block py-3 font-semibold text-pink-600 border-l-4 border-pink-600 pl-4">Carrinho</a></li>
+                    <li><a href="login.html" class="block py-3 font-medium text-gray-600 hover:text-pink-600 transition pl-4">Admin</a></li>
+                </ul>
             </div>
         </div>
     </header>
@@ -563,9 +576,36 @@
 
         // Inicializar quando a página carregar
         document.addEventListener('DOMContentLoaded', function() {
+            inicializarMobileMenu();
             atualizarCarrinho();
             feather.replace();
         });
+
+        function inicializarMobileMenu() {
+            const menuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (menuButton && mobileMenu) {
+                menuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                    const icon = menuButton.querySelector('i');
+                    if (icon) {
+                        icon.setAttribute('data-feather', 
+                            mobileMenu.classList.contains('hidden') ? 'menu' : 'x'
+                        );
+                        feather.replace();
+                    }
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!menuButton.contains(e.target) && !mobileMenu.contains(e.target)) {
+                        mobileMenu.classList.add('hidden');
+                        menuButton.querySelector('i')?.setAttribute('data-feather', 'menu');
+                        feather.replace();
+                    }
+                });
+            }
+        }
     </script>
 </body>
 </html>

@@ -3,42 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel do Vendedor - Graça Presentes</title>
+    <title>Painel Administrativo - Graça Presentes</title>
+    <script src="config.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-    
-    <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #fdf2f8 0%, #f0f9ff 100%);
-        }
-        
-        .image-preview-container {
-            position: relative;
-            display: inline-block;
-        }
-        
-        .remove-image-btn {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: #ef4444;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 12px;
-            border: 2px solid white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .remove-image-btn:hover {
-            background: #dc2626;
-        }
-    </style>
+    <link rel="stylesheet" href="styles/style.css">
 </head>
 <body class="bg-gray-100 min-h-screen">
     <!-- Header -->
@@ -54,7 +23,8 @@
             
             <nav class="hidden md:block">
                 <ul class="flex space-x-8">
-                    <li><a href="index.html" class="nav-link font-medium hover:text-pink-600 transition">Sair</a></li>
+                    <li><a href="javascript:void(0)" onclick="fazerLogout()" 
+                           class="nav-link font-medium hover:text-pink-600 transition">Sair</a></li>
                     <li><a href="produtos.html" class="nav-link font-medium hover:text-pink-600 transition">Ver Produtos</a></li>
                 </ul>
             </nav>
@@ -207,10 +177,85 @@
     </div>
 
     <script>
+        // Verificar se o usuário está logado
+        const adminToken = localStorage.getItem('admin_token');
+        if (!adminToken) {
+            // Redirecionar para tela de login se não estiver logado
+            window.location.href = 'login.html';
+        }
+        
         feather.replace();
         
         // Variável para armazenar a imagem em Base64
         let imagemBase64 = null;
+
+        // Função para fazer logout seguro
+        function fazerLogout() {
+            // Remover token de autenticação
+            localStorage.removeItem('admin_token');
+            
+            // Limpar dados da sessão administrativa
+            sessionStorage.clear();
+            
+            // Opcional: Limpar também o carrinho (se quiser)
+            // localStorage.removeItem('carrinho');
+            
+            // Redirecionar para a página inicial
+            mostrarFeedback('🔒 Saindo do sistema...', 'info');
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1000);
+        }
+
+        // Sistema de timeout de sessão (30 minutos)
+        let idleTimer;
+        function resetIdleTimer() {
+            clearTimeout(idleTimer);
+            idleTimer = setTimeout(() => {
+                // Verificar se ainda está autenticado
+                const token = localStorage.getItem('admin_token');
+                if (token) {
+                    mostrarFeedback('⏰ Sessão expirada por inatividade. Redirecionando...', 'warning');
+                    setTimeout(() => {
+                        fazerLogout();
+                    }, 2000);
+                }
+            }, 30 * 60 * 1000); // 30 minutos
+        }
+
+        // Iniciar timer de inatividade ao carregar a página
+        resetIdleTimer();
+        
+        // Resetar timer em eventos de interação
+        ['click', 'mousemove', 'keypress', 'scroll'].forEach(event => {
+            document.addEventListener(event, resetIdleTimer, { passive: true });
+        });
+
+        // Detectar quando a página perde o foco (usuário sai)
+        window.addEventListener('blur', function() {
+            // Não fazer logout imediato, apenas registrar
+            console.log('Página perdeu foco');
+        });
+
+        // Detectar quando a página volta a ter foco
+        window.addEventListener('focus', function() {
+            // Verificar se o token ainda existe
+            const token = localStorage.getItem('admin_token');
+            if (!token) {
+                mostrarFeedback('🔒 Sessão expirada. Redirecionando para login...', 'warning');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1500);
+            } else {
+                resetIdleTimer(); // Resetar timer de inatividade
+            }
+        });
+
+        // Detectar quando o usuário está saindo da página (fechando aba/janela)
+        window.addEventListener('beforeunload', function(e) {
+            // Não fazer nada especial para não interferir na navegação
+            // O token permanecerá no localStorage até expirar ou ser removido manualmente
+        });
 
         // Funções para manipulação de imagem
         function previewImagem(event) {
@@ -218,13 +263,13 @@
             if (file) {
                 // Verificar tamanho (max 5MB)
                 if (file.size > 5 * 1024 * 1024) {
-                    alert('❌ A imagem deve ter no máximo 5MB');
+                    mostrarFeedback('❌ A imagem deve ter no máximo 5MB', 'error');
                     return;
                 }
 
                 // Verificar tipo
                 if (!file.type.match('image.*')) {
-                    alert('❌ Por favor, selecione apenas arquivos de imagem');
+                    mostrarFeedback('❌ Por favor, selecione apenas arquivos de imagem', 'error');
                     return;
                 }
 
@@ -278,14 +323,26 @@
             };
 
             try {
+                // Usar a mesma URL da API que o index.html usa
+                const url = API_BASE_URL ? `${API_BASE_URL}/api/produtos` : '/api/produtos';
+                
                 // 1. Enviar dados do produto para a API
-                const response = await fetch('/api/produtos', {
+                const response = await fetch(url, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${adminToken}`
+                    },
                     body: JSON.stringify(produtoData)
                 });
 
                 if (!response.ok) {
+                    if (response.status === 401) {
+                        mostrarFeedback('🔒 Sessão expirada. Redirecionando...', 'error');
+                        setTimeout(() => fazerLogout(), 2000);
+                        return;
+                    }
+                    
                     const errorData = await response.json();
                     throw new Error(errorData.error || 'Falha ao cadastrar produto');
                 }
@@ -295,9 +352,13 @@
 
                 // 2. Se houver imagem, enviar para a API de upload
                 if (imagemBase64) {
-                    const uploadResponse = await fetch('/api/upload-imagem', {
+                    const uploadUrl = API_BASE_URL ? `${API_BASE_URL}/api/upload-imagem` : '/api/upload-imagem';
+                    const uploadResponse = await fetch(uploadUrl, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${adminToken}`
+                        },
                         body: JSON.stringify({
                             produto_id: produtoId,
                             imagem_base64: imagemBase64
@@ -312,6 +373,7 @@
                 this.reset();
                 removerImagem();
                 carregarProdutos();
+                resetIdleTimer(); // Resetar timer após ação
 
             } catch (error) {
                 console.error('Erro ao cadastrar produto:', error);
@@ -329,14 +391,26 @@
                 feedbackAnterior.remove();
             }
 
+            const cores = {
+                'success': 'from-green-500 to-emerald-600',
+                'error': 'from-red-500 to-rose-600', 
+                'warning': 'from-yellow-500 to-amber-600',
+                'info': 'from-blue-500 to-cyan-600'
+            };
+
+            const icones = {
+                'success': 'check',
+                'error': 'alert-triangle',
+                'warning': 'alert-circle',
+                'info': 'info'
+            };
+
             const feedback = document.createElement('div');
-            feedback.className = `form-feedback fixed top-4 right-4 z-50 p-4 rounded-xl shadow-lg transform translate-x-full transition-transform duration-300 ${
-                tipo === 'success' ? 'bg-green-500' : 'bg-red-500'
-            } text-white`;
+            feedback.className = `form-feedback fixed top-4 right-4 z-50 p-4 rounded-xl shadow-lg transform translate-x-full transition-transform duration-300 bg-gradient-to-r ${cores[tipo] || 'from-gray-500 to-gray-600'} text-white`;
             feedback.innerHTML = `
                 <div class="flex items-center">
                     <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mr-3">
-                        <i data-feather="${tipo === 'success' ? 'check' : 'alert-triangle'}" class="w-5 h-5"></i>
+                        <i data-feather="${icones[tipo] || 'info'}" class="w-5 h-5"></i>
                     </div>
                     <div>
                         <p class="font-semibold">${mensagem}</p>
@@ -361,14 +435,14 @@
         async function carregarProdutos() {
             const lista = document.getElementById('listaProdutos');
             try {
-                const response = await fetch('/api/produtos');
+                // Usar a mesma URL da API que o index.html usa
+                const url = API_BASE_URL ? `${API_BASE_URL}/api/produtos` : '/api/produtos';
+                const response = await fetch(url);
                 if (!response.ok) throw new Error('Falha ao buscar produtos');
                 
                 const produtos = await response.json();
                 
                 document.getElementById('totalProdutos').textContent = `${produtos.length} produto${produtos.length !== 1 ? 's' : ''}`;
-                
-                
                 
                 if (produtos.length === 0) {
                     lista.innerHTML = `
@@ -410,7 +484,7 @@
                                     </button>
                                 </div>
                                 <div class="flex items-center space-x-4 mt-2">
-                                    <span class="text-pink-600 font-bold">R$ ${produto.preco.toFixed(2)}</span>
+                                    <span class="text-pink-600 font-bold">R$ ${produto.preco.toFixed(2).replace('.', ',')}</span>
                                     <span class="bg-${produto.cor || 'gray'}-100 text-${produto.cor || 'gray'}-600 text-xs px-2 py-1 rounded-full whitespace-nowrap flex-shrink-0">${produto.categoria}</span>
                                     ${produto.desconto > 0 ? 
                                         `<span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">${produto.desconto}% OFF</span>` : ''}
@@ -419,7 +493,7 @@
                                     ${produto.novo ? '<span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Novo</span>' : ''}
                                     ${produto.mais_vendido ? '<span class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs">Mais Vendido</span>' : ''}
                                     <span class="text-xs text-gray-400">
-                                        ID: ${produto.id.slice(-6)}
+                                        ID: ${produto.id ? produto.id.slice(-6) : 'N/A'}
                                     </span>
                                 </div>
                             </div>
@@ -429,6 +503,7 @@
                 }).join('');
                 
                 feather.replace();
+                resetIdleTimer(); // Resetar timer após carregar produtos
             } catch (error) {
                 console.error('Erro ao carregar produtos:', error);
                 lista.innerHTML = '<p class="text-red-500 text-center">Erro ao carregar produtos</p>';
@@ -437,29 +512,57 @@
 
         async function removerProduto(id) {
             if (confirm('Tem certeza que deseja remover este produto?')) {
-                // Futuramente, criar uma rota DELETE /api/produtos/:id no backend
-                // Por enquanto, vamos apenas avisar o usuário.
-                mostrarFeedback('Funcionalidade de remoção ainda não implementada no backend.', 'info');
+                try {
+                    const url = API_BASE_URL ? `${API_BASE_URL}/api/produtos/${id}` : `/api/produtos/${id}`;
+                    const response = await fetch(url, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${adminToken}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            mostrarFeedback('🔒 Sessão expirada. Redirecionando...', 'error');
+                            setTimeout(() => fazerLogout(), 2000);
+                            return;
+                        }
+                        
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Falha ao remover produto');
+                    }
+
+                    mostrarFeedback('✅ Produto removido com sucesso!', 'success');
+                    carregarProdutos();
+                    resetIdleTimer(); // Resetar timer após ação
+                } catch (error) {
+                    console.error('Erro ao remover produto:', error);
+                    mostrarFeedback('❌ Erro ao remover produto: ' + error.message, 'error');
+                }
             }
         }
 
         async function exportarProdutos() {
             try {
-                const response = await fetch('/api/produtos');
+                const url = API_BASE_URL ? `${API_BASE_URL}/api/produtos` : '/api/produtos';
+                const response = await fetch(url);
                 if (!response.ok) throw new Error('Falha ao buscar produtos para exportação');
                 const produtos = await response.json();
 
                 const dadosString = JSON.stringify(produtos, null, 2);
                 const blob = new Blob([dadosString], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
+                const urlObject = URL.createObjectURL(blob);
                 
                 const a = document.createElement('a');
-                a.href = url;
+                a.href = urlObject;
                 a.download = `produtos_graca_presentes_${new Date().toISOString().split('T')[0]}.json`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
-                URL.revokeObjectURL(url);
+                URL.revokeObjectURL(urlObject);
+                
+                mostrarFeedback('✅ Produtos exportados com sucesso!', 'success');
+                resetIdleTimer(); // Resetar timer após ação
             } catch (error) {
                 mostrarFeedback(`❌ ${error.message}`, 'error');
             }
@@ -467,6 +570,18 @@
 
         // Carregar produtos ao iniciar
         carregarProdutos();
+
+        // Adicionar botão de logout também no mobile se necessário
+        document.addEventListener('DOMContentLoaded', function() {
+            // Garantir que o botão de logout funcione
+            const logoutLink = document.querySelector('a[onclick*="fazerLogout"]');
+            if (logoutLink) {
+                logoutLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    fazerLogout();
+                });
+            }
+        });
     </script>
 </body>
 </html>

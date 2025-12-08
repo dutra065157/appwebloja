@@ -10,49 +10,15 @@
     <!-- Preload critical resources -->
     <link rel="preload" href="https://cdn.tailwindcss.com" as="script">
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js" as="script">
+
+    <!-- CSS Personalizado -->
+    <link rel="stylesheet" href="style/style.css">
     
+    <script src="config.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     
-    <style>
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .animate-fade-in-up {
-            animation: fadeInUp 0.6s ease-out forwards;
-        }
-
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            line-clamp: 2;
-        }
-        
-        .gradient-bg {
-            background: linear-gradient(135deg, #fdf2f8 0%, #f0f9ff 100%);
-        }
-        
-        .product-image {
-            height: 192px;
-            object-fit: cover;
-        }
-        
-        @media (max-width: 640px) {
-            .product-image {
-                height: 160px;
-            }
-        }
-    </style>
+    
 </head>
 <body class="text-gray-800 bg-white antialiased">
     <!-- Header -->
@@ -365,7 +331,7 @@
     </footer>
 
     <script>
-        // Classe Carrinho
+        // Classe Carrinho (mantida igual ao index.html)
         class Carrinho {
             constructor() {
                 this.itens = JSON.parse(localStorage.getItem('carrinho')) || [];
@@ -445,28 +411,15 @@
 
         // Inicialização
         document.addEventListener('DOMContentLoaded', function() {
+            inicializar();
+        });
+
+        function inicializar() {
             carregarProdutos();
             inicializarMobileMenu();
+            inicializarFiltros();
             feather.replace();
-            
-            // Filtros
-            document.getElementById('search-input').addEventListener('input', filtrarProdutos);
-            document.getElementById('category-filter').addEventListener('change', filtrarProdutos);
-            
-            // Botões de categoria rápida
-            document.querySelectorAll('.category-filter-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const categoria = this.getAttribute('data-category');
-                    document.getElementById('category-filter').value = categoria;
-                    filtrarProdutos();
-                    
-                    document.querySelectorAll('.category-filter-btn').forEach(b => {
-                        b.classList.remove('ring-2', 'ring-pink-300', 'ring-offset-2');
-                    });
-                    this.classList.add('ring-2', 'ring-pink-300', 'ring-offset-2');
-                });
-            });
-        });
+        }
 
         function inicializarMobileMenu() {
             const menuButton = document.getElementById('mobile-menu-button');
@@ -497,6 +450,26 @@
             }
         }
 
+        function inicializarFiltros() {
+            // Filtros
+            document.getElementById('search-input').addEventListener('input', filtrarProdutos);
+            document.getElementById('category-filter').addEventListener('change', filtrarProdutos);
+            
+            // Botões de categoria rápida
+            document.querySelectorAll('.category-filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const categoria = this.getAttribute('data-category');
+                    document.getElementById('category-filter').value = categoria;
+                    filtrarProdutos();
+                    
+                    document.querySelectorAll('.category-filter-btn').forEach(b => {
+                        b.classList.remove('ring-2', 'ring-pink-300', 'ring-offset-2');
+                    });
+                    this.classList.add('ring-2', 'ring-pink-300', 'ring-offset-2');
+                });
+            });
+        }
+
         // Carregar produtos da API
         async function carregarProdutos() {
             const loadingState = document.getElementById('loading-state');
@@ -510,8 +483,10 @@
             productsGrid.classList.add('hidden');
             emptyState.classList.add('hidden');
 
-            try {                
-                const response = await fetch('/api/produtos');
+            try {
+                // Usar a mesma URL da API que o index.html usa
+                const url = API_BASE_URL ? `${API_BASE_URL}/api/produtos` : '/api/produtos';
+                const response = await fetch(url);
                 if (!response.ok) {
                     throw new Error(`Erro na API: ${response.statusText}`);
                 }
@@ -544,7 +519,7 @@
                 const temImagem = !!produto.imagem_url;
                 const imagemSrc = produto.imagem_url;
                 
-                // Determinar badges
+                // Determinar badges (MESMA LÓGICA DO INDEX.HTML)
                 const badges = [];
                 
                 if (produto.desconto && produto.desconto > 0) {
@@ -554,14 +529,14 @@
                         </div>
                     `);
                 }
-                if (produto.novo && badges.length === 0) {
+                if (produto.novo && !badges.length) { // Mostra 'Novo' apenas se não tiver outro badge
                     badges.push(`
                         <div class="absolute top-3 right-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs px-2 py-1 rounded-full shadow-lg z-10">
                             Novo
                         </div>
                     `);
                 }
-                if (produto.mais_vendido && badges.length === 0) {
+                if (produto.mais_vendido && !badges.length) { // Mostra 'Mais Vendido' apenas se não tiver outro badge
                     badges.push(`
                         <div class="absolute top-3 right-3 bg-gradient-to-r from-orange-500 to-amber-500 text-white text-xs px-2 py-1 rounded-full shadow-lg z-10">
                             🔥 Mais Vendido
@@ -569,7 +544,7 @@
                     `);
                 }
 
-                // Calcular preço com desconto
+                // Calcular preço com desconto (MESMA LÓGICA DO INDEX.HTML)
                 const precoFinal = produto.desconto && produto.desconto > 0 
                     ? parseFloat(produto.preco) * (1 - parseFloat(produto.desconto) / 100)
                     : parseFloat(produto.preco);
@@ -580,7 +555,7 @@
                      data-categoria="${produto.categoria}" 
                      data-nome="${produto.nome.toLowerCase()}">
                     <div class="relative overflow-hidden">
-                        <!-- Imagem do produto ou placeholder com gradiente -->
+                        <!-- Imagem do produto ou placeholder com gradiente (MESMA ESTRUTURA DO INDEX.HTML) -->
                         ${temImagem ? 
                             `<img src="${imagemSrc}" 
                                   alt="${produto.nome}" 
@@ -590,7 +565,7 @@
                             </div>`
                         }
                         
-                        <!-- Badges Container -->
+                        <!-- Badges Container (MESMA ESTRUTURA DO INDEX.HTML) -->
                         <div class="absolute top-3 right-3 flex flex-col space-y-2">
                             ${badges.join('')}
                         </div>
@@ -624,8 +599,8 @@
                                     </span>` : 
                                     ''}
                             </div>
-                            <button class="add-to-cart-btn bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white p-3 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-110 group/btn"
-                                    data-produto-id="${produto._id}"
+                            <button class="add-to-cart bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white p-3 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-110 group/btn"
+                                    data-produto-id="${produto.id}"
                                     aria-label="Adicionar ${produto.nome} ao carrinho">
                                 <i data-feather="plus" class="w-4 h-4 group-hover/btn:rotate-90 transition-transform"></i>
                             </button>
@@ -638,15 +613,15 @@
             // Atualizar ícones do Feather
             feather.replace();
             
-            // Adicionar eventos aos botões de adicionar ao carrinho
-            document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+            // Adicionar eventos aos botões de adicionar ao carrinho (MESMA LÓGICA DO INDEX.HTML)
+            document.querySelectorAll('.add-to-cart').forEach(button => {
                 button.addEventListener('click', function() {
                     const produtoId = this.getAttribute('data-produto-id');
-                    const produto = produtos.find(p => p._id === produtoId);
+                    const produto = produtos.find(p => p.id === produtoId);
                     if (produto) {
                         carrinho.adicionarItem(produto);
                         
-                        // Efeito visual no botão
+                        // Efeito visual no botão (MESMO EFEITO DO INDEX.HTML)
                         const originalHTML = this.innerHTML;
                         this.innerHTML = '<i data-feather="check" class="w-4 h-4"></i>';
                         this.classList.remove('from-pink-500', 'to-rose-500');
@@ -706,6 +681,45 @@
             });
             
             filtrarProdutos();
+        }
+
+        // Permitir recarregar produtos manualmente
+        window.recarregarProdutos = function() {
+            carregarProdutos();
+            mostrarNotificacao('Produtos recarregados com sucesso!', 'success');
+        };
+
+        // Função de notificação (como no index.html)
+        function mostrarNotificacao(mensagem, tipo) {
+            const notificacaoAnterior = document.querySelector('.app-notification');
+            if (notificacaoAnterior) {
+                notificacaoAnterior.remove();
+            }
+
+            const notificacao = document.createElement('div');
+            notificacao.className = `app-notification fixed top-4 right-4 z-50 p-4 rounded-xl shadow-lg transform translate-x-full transition-transform duration-300 ${
+                tipo === 'success' ? 'bg-green-500' : tipo === 'error' ? 'bg-red-500' : 'bg-blue-500'
+            } text-white`;
+            notificacao.innerHTML = `
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mr-3">
+                        <i data-feather="${tipo === 'success' ? 'check' : tipo === 'error' ? 'alert-triangle' : 'info'}" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold">${mensagem}</p>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(notificacao);
+            feather.replace();
+            
+            setTimeout(() => notificacao.classList.remove('translate-x-full'), 100);
+            
+            setTimeout(() => {
+                notificacao.classList.add('translate-x-full');
+                setTimeout(() => notificacao.remove(), 300);
+            }, 4000);
         }
     </script>
 </body>
