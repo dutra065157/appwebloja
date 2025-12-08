@@ -25,9 +25,24 @@
                 <ul class="flex space-x-8">
                     <li><a href="javascript:void(0)" onclick="fazerLogout()" 
                            class="nav-link font-medium hover:text-pink-600 transition">Sair</a></li>
-                    <li><a href="produtos.html" class="nav-link font-medium hover:text-pink-600 transition">Ver Produtos</a></li>
+                    <li><a href="produtos.html" class="nav-link font-medium hover:text-pink-600 transition">Ver Loja</a></li>
                 </ul>
             </nav>
+
+            <!-- Mobile Menu Button -->
+            <button class="md:hidden p-2 rounded-full hover:bg-pink-100 transition" id="mobile-menu-button">
+                <i data-feather="menu"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div class="md:hidden hidden bg-white/95 backdrop-blur-sm shadow-xl border-t" id="mobile-menu">
+            <div class="container mx-auto px-4 py-4">
+                <ul class="space-y-3">
+                    <li><a href="produtos.html" class="block py-3 font-medium text-gray-600 hover:text-pink-600 transition pl-4">Ver Loja</a></li>
+                    <li><a href="javascript:void(0)" onclick="fazerLogout()" class="block py-3 font-medium text-gray-600 hover:text-pink-600 transition pl-4">Sair</a></li>
+                </ul>
+            </div>
         </div>
     </header>
 
@@ -175,6 +190,31 @@
             </div>
         </div>
     </div>
+
+    <style>
+        /* Estilos para o preview da imagem */
+        .image-preview-container {
+            position: relative;
+            display: inline-block;
+        }
+        .remove-image-btn {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: rgba(239, 68, 68, 0.9); /* red-500 */
+            color: white;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+    </style>
 
     <script>
         // Verificar se o usuário está logado
@@ -581,7 +621,35 @@
                     fazerLogout();
                 });
             }
+
+            inicializarMobileMenu();
         });
+
+        function inicializarMobileMenu() {
+            const menuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (menuButton && mobileMenu) {
+                menuButton.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                    const icon = menuButton.querySelector('i');
+                    if (icon) {
+                        icon.setAttribute('data-feather', 
+                            mobileMenu.classList.contains('hidden') ? 'menu' : 'x'
+                        );
+                        feather.replace();
+                    }
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!menuButton.contains(e.target) && !mobileMenu.contains(e.target)) {
+                        mobileMenu.classList.add('hidden');
+                        menuButton.querySelector('i')?.setAttribute('data-feather', 'menu');
+                        feather.replace();
+                    }
+                });
+            }
+        }
     </script>
 </body>
 </html>
