@@ -1,34 +1,7 @@
 # 🛍️ Graça Presentes - E-commerce Completo
 
-> Um projeto Full Stack de uma loja virtual de presentes, construído com um front-end moderno e responsivo e uma API REST em Python.
 
-<div align="center">
 
-[![Licença](https://img.shields.io/badge/licen%C3%A7a-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.0-blue?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-
-</div>
-
-<br>
-
-<p align="center">
-  <a href="https://appwebloja-api.onrender.com" target="_blank">
-  <a href="https://dutra065157.github.io/appwebloja/" target="_blank">
-
-    <img src="https://img.shields.io/badge/Ver%20Demo%20Online-Acessar-brightgreen?style=for-the-badge&logo=render" alt="Ver Demo">
-  </a>&nbsp;
-  <a href="[URL_DO_SEU_GITHUB_AQUI]" target="_blank">
-    <img src="https://img.shields.io/badge/C%C3%B3digo%20Fonte-GitHub-blue?style=for-the-badge&logo=github" alt="Repositório">
-  </a>
-</p>
-
-<br>
-
-<div align="center">
-  <!-- IMPORTANTE: Substitua a URL abaixo por uma imagem ou GIF do seu projeto! -->
-  <img src="https://res.cloudinary.com/dxgd62afy/image/upload/v1764743537/graca-presentes/logo.jpg" alt="Demonstração do Projeto Graça Presentes" width="80%">
-</div>
 
 ## 💻 Sobre o Projeto
 
@@ -88,6 +61,8 @@ Feito com ❤️ por Renato Santos. Entre em contato!
 [!Gmail](mailto:SEU_EMAIL_AQUI)
 
 https://appwebloja-api.onrender.com
+
+
 https://dutra065157.github.io/appwebloja/
 
 
