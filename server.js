@@ -36,6 +36,25 @@ const errorHandler = (err, req, res, next) => {
     res.status(500).json({ error: 'Ocorreu um erro inesperado no servidor.' });
 };
 
+// Middleware de autenticação para rotas de admin
+const authMiddleware = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (token == null) {
+        return res.status(401).json({ error: 'Acesso não autorizado. Token não fornecido.' });
+    }
+
+    // Para este projeto, o token é uma string simples. Em um projeto real, você usaria JWT.
+    // Vamos apenas verificar se o token corresponde ao esperado (pode ser qualquer string segura).
+    // O frontend usa 'admin_logged_in' como token.
+    if (token === 'admin_logged_in') {
+        next(); // Token válido, continue
+    } else {
+        return res.status(403).json({ error: 'Token inválido.' });
+    }
+};
+
 // --- ROTAS DA API ---
 
 // Rota de Health Check
@@ -71,7 +90,7 @@ app.get('/api/produtos', async (req, res, next) => {
 });
 
 // Rota para cadastrar um novo produto
-app.post('/api/produtos', async (req, res, next) => {
+app.post('/api/produtos', authMiddleware, async (req, res, next) => {
     try {
         const db = getDb();
         const p = req.body;
@@ -159,7 +178,7 @@ app.post('/api/pedidos', async (req, res, next) => {
 
 // Rota para upload de imagem
 // Esta rota agora salva o arquivo localmente e atualiza o produto no DB.
-app.post('/api/upload-imagem', async (req, res, next) => {
+app.post('/api/upload-imagem', authMiddleware, async (req, res, next) => {
     try {
         const { imagem_base64, produto_id } = req.body;
 
@@ -168,7 +187,7 @@ app.post('/api/upload-imagem', async (req, res, next) => {
         }
 
         // Extrai o tipo de imagem (ex: 'jpeg') e os dados da string base64
-        const matches = imagem_base64.match(/^data:image\/([A-Za-z-+\/]+);base64,(.+)$/);
+        const matches = imagem_base64.match(/^data:image\/(.+);base64,(.+)$/);
         if (!matches || matches.length !== 3) {
             return res.status(400).json({ error: 'Formato de imagem base64 inválido.' });
         }
@@ -198,14 +217,6 @@ app.post('/api/upload-imagem', async (req, res, next) => {
     }
 });
 
-// Rota fallback para servir o index.html em rotas não encontradas (para SPAs)
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-// Adiciona o middleware de tratamento de erros no final, depois de todas as rotas
-app.use(errorHandler);
-
 // --- INICIALIZAÇÃO DO SERVIDOR ---
 
 app.listen(PORT, () => {
@@ -216,6 +227,45 @@ app.listen(PORT, () => {
     console.log("⏹️ Para parar: Ctrl+C");
     console.log("=" * 60);
 });
+
+// Rota para remover um produto
+app.delete('/api/produtos/:id', authMiddleware, async (req, res, next) => {
+    try {
+        const db = getDb();
+        const { id } = req.params;
+
+        if (!ObjectId.isValid(id)) {
+            return res.status(400).json({ error: 'ID de produto inválido.' });
+        }
+
+        // Lógica para remover a imagem do disco antes de remover do DB
+        const produto = await db.collection('produtos').findOne({ _id: new ObjectId(id) });
+        if (produto && produto.imagem_url) {
+            const imagePath = path.join(__dirname, produto.imagem_url);
+            if (fs.existsSync(imagePath)) {
+                fs.unlinkSync(imagePath);
+            }
+        }
+
+        const result = await db.collection('produtos').deleteOne({ _id: new ObjectId(id) });
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ error: 'Produto não encontrado.' });
+        }
+        res.status(200).json({ success: true, message: 'Produto removido com sucesso.' });
+    } catch (error) {
+        next(error);
+    }
+});
+
+// Rota fallback para servir o index.html em rotas não encontradas (para SPAs)
+// DEVE SER UMA DAS ÚLTIMAS ROTAS
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Adiciona o middleware de tratamento de erros no final, depois de todas as rotas
+app.use(errorHandler);
 
 // Função auxiliar para estilos de categoria
 function getCategoryStyles(categoria) {

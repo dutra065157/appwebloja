@@ -221,11 +221,11 @@
     <!-- Footer -->
     <footer class="bg-gradient-to-b from-gray-900 to-gray-800 text-white pt-16 pb-8">
         <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-                <!-- Brand -->
-                <div class="lg:col-span-1">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
+                <!-- Brand (ocupando mais espaço em telas grandes) -->
+                <div class="md:col-span-2 lg:col-span-2">
                     <div class="flex items-center mb-6">
-                        <div class="w-12 h-12 rounded-full bg-pink-500 flex items-center justify-center mr-3 shadow-lg">
+                        <div class="w-12 h-12 rounded-full bg-pink-500 flex-shrink-0 flex items-center justify-center mr-3 shadow-lg">
                             <i data-feather="gift" class="text-white w-6 h-6"></i>
                         </div>
                         <h3 class="text-2xl font-bold font-serif">Graça Presentes</h3>
@@ -250,59 +250,18 @@
                     </div>
                 </div>
                 
-                <!-- Links Úteis -->
-                <div>
-                    <h4 class="font-bold text-lg mb-6 text-white border-b border-gray-700 pb-2">Links Úteis</h4>
-                    <ul class="space-y-3">
-                        <li><a href="#" class="text-gray-300 hover:text-pink-300 transition-all duration-300 flex items-center group">
-                            <i data-feather="chevron-right" class="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                            Sobre Nós
-                        </a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-pink-300 transition-all duration-300 flex items-center group">
-                            <i data-feather="chevron-right" class="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                            Blog
-                        </a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-pink-300 transition-all duration-300 flex items-center group">
-                            <i data-feather="chevron-right" class="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                            Termos de Serviço
-                        </a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-pink-300 transition-all duration-300 flex items-center group">
-                            <i data-feather="chevron-right" class="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                            Política de Privacidade
-                        </a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-pink-300 transition-all duration-300 flex items-center group">
-                            <i data-feather="chevron-right" class="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                            Trocas e Devoluções
-                        </a></li>
-                    </ul>
-                </div>
                 
-                <!-- Minha Conta -->
-                <div>
-                    <h4 class="font-bold text-lg mb-6 text-white border-b border-gray-700 pb-2">Minha Conta</h4>
-                    <ul class="space-y-3">
-                        <li><a href="admin.html" class="text-gray-300 hover:text-pink-300 transition-all duration-300 flex items-center group">
-                            <i data-feather="chevron-right" class="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                            Admin
-                        </a></li>
-                        <li><a href="carrinho.html" class="text-gray-300 hover:text-pink-300 transition-all duration-300 flex items-center group">
-                            <i data-feather="chevron-right" class="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                            Carrinho
-                        </a></li>
-                    </ul>
-                </div>
-                
-                <!-- Contato -->
-                <div>
-                    <h4 class="font-bold text-lg mb-6 text-white border-b border-gray-700 pb-2">Contato</h4>
+                <!-- Contato (ocupando o espaço restante) -->
+                <div class="lg:col-span-1">
+                    <h4 class="font-bold text-lg mb-6 text-white border-b-2 border-pink-500/50 pb-2 inline-block">Contato</h4>
                     <ul class="space-y-4">
                         <li class="flex items-start">
                             <i data-feather="map-pin" class="mr-3 w-5 h-5 text-pink-400 mt-1 flex-shrink-0"></i>
-                            <span class="text-gray-300">Rua das Flores, 123<br>Jardim Primavera<br>São Paulo/SP - 01234-567</span>
+                            <span class="text-gray-300">Aveninda principal<br>Jardim Dos ipyeis <br>Sumare /SP - 01234-567</span>
                         </li>
                         <li class="flex items-center">
                             <i data-feather="phone" class="mr-3 w-5 h-5 text-pink-400"></i>
-                            <span class="text-gray-300">(11) 9876-5432</span>
+                            <span class="text-gray-300">(19) 9876-5432</span>
                         </li>
                         <li class="flex items-center">
                             <i data-feather="mail" class="mr-3 w-5 h-5 text-pink-400"></i>
@@ -319,7 +278,7 @@
             <!-- Bottom Bar -->
             <div class="border-t border-gray-700 mt-12 pt-8 text-center">
                 <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-                    <p class="text-gray-400">&copy; 2024 Graça Presentes. Todos os direitos reservados.</p>
+                    <p class="text-gray-400">&copy; 2025 Graça Presentes. Todos os direitos reservados.</p>
                     <div class="flex space-x-6 text-gray-400 text-sm">
                         <a href="#" class="hover:text-pink-300 transition">Privacidade</a>
                         <a href="#" class="hover:text-pink-300 transition">Termos</a>
@@ -517,7 +476,10 @@
             
             container.innerHTML = produtosParaRenderizar.sort((a, b) => a.nome.localeCompare(b.nome)).map((produto, index) => {
                 const temImagem = !!produto.imagem_url;
-                const imagemSrc = produto.imagem_url;
+                // Ajuste: Construir a URL completa da imagem usando a API_BASE_URL
+                const imagemSrc = temImagem 
+                    ? (API_BASE_URL ? `${API_BASE_URL}${produto.imagem_url}` : produto.imagem_url) 
+                    : '';
                 
                 // Determinar badges (MESMA LÓGICA DO INDEX.HTML)
                 const badges = [];
