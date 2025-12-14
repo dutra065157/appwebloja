@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script src="config.js"></script>
-    <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="style/style.css">
 </head>
 <body class="text-gray-800">
     <!-- Header -->
@@ -48,8 +48,7 @@
                 <ul class="space-y-3">
                     <li><a href="index.html" class="block py-3 font-medium text-gray-600 hover:text-pink-600 transition pl-4">Home</a></li>
                     <li><a href="produtos.html" class="block py-3 font-medium text-gray-600 hover:text-pink-600 transition pl-4">Produtos</a></li>
-                    <li><a href="carrinho.html" class="block py-3 font-semibold text-pink-600 border-l-4 border-pink-600 pl-4">Carrinho</a></li>
-                    <li><a href="login.html" class="block py-3 font-medium text-gray-600 hover:text-pink-600 transition pl-4">Admin</a></li>
+                    
                 </ul>
             </div>
         </div>
@@ -126,66 +125,72 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-12">
+    <footer class="bg-gradient-to-b from-gray-900 to-gray-800 text-white pt-16 pb-8">
         <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div>
-                    <div class="flex items-center mb-4">
-                        <div class="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center mr-3">
-                            <i data-feather="gift" class="text-white"></i>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
+                <!-- Brand (ocupando mais espaço em telas grandes) -->
+                <div class="md:col-span-2 lg:col-span-2">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 rounded-full bg-pink-500 flex-shrink-0 flex items-center justify-center mr-3 shadow-lg">
+                            <i data-feather="gift" class="text-white w-6 h-6"></i>
                         </div>
-                        <h3 class="text-xl font-bold">Graça Presentes</h3>
+                        <h3 class="text-2xl font-bold font-serif">Graça Presentes</h3>
                     </div>
-                    <p class="text-gray-300">Presentes especiais para momentos inesquecíveis desde 2010.</p>
-                    <div class="flex space-x-4 mt-4">
-                        <a href="#" class="text-gray-300 hover:text-white transition"><i data-feather="facebook"></i></a>
-                        <a href="#" class="text-gray-300 hover:text-white transition"><i data-feather="instagram"></i></a>
-                        <a href="#" class="text-gray-300 hover:text-white transition"><i data-feather="twitter"></i></a>
+                    <p class="text-gray-300 mb-6 leading-relaxed">
+                        Presentes especiais para momentos inesquecíveis desde 2010. 
+                        Levamos amor e carinho em cada entrega.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 bg-gray-700 hover:bg-pink-500 rounded-full flex items-center justify-center transition-all duration-300 transform hover:-translate-y-1 shadow-lg"
+                           aria-label="Facebook">
+                            <i data-feather="facebook" class="w-4 h-4"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-700 hover:bg-pink-500 rounded-full flex items-center justify-center transition-all duration-300 transform hover:-translate-y-1 shadow-lg"
+                           aria-label="Instagram">
+                            <i data-feather="instagram" class="w-4 h-4"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-700 hover:bg-pink-500 rounded-full flex items-center justify-center transition-all duration-300 transform hover:-translate-y-1 shadow-lg"
+                           aria-label="Twitter">
+                            <i data-feather="twitter" class="w-4 h-4"></i>
+                        </a>
                     </div>
                 </div>
                 
-                <div>
-                    <h4 class="font-bold text-lg mb-4">Links Úteis</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-300 hover:text-white transition">Sobre Nós</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition">Blog</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition">Termos de Serviço</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition">Política de Privacidade</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition">Trocas e Devoluções</a></li>
-                    </ul>
-                </div>
                 
-                <div>
-                    <h4 class="font-bold text-lg mb-4">Minha Conta</h4>
-                    <ul class="space-y-2">
-                        <li><a href="cadastro.html" class="text-gray-300 hover:text-white transition">Minha Conta</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition">Meus Pedidos</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition">Lista de Desejos</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-white transition">Newsletter</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h4 class="font-bold text-lg mb-4">Contato</h4>
-                    <ul class="space-y-2">
-                        <li class="flex items-center">
-                            <i data-feather="map-pin" class="mr-2 w-4 h-4"></i>
-                            <span class="text-gray-300">Rua das Flores, 123 - São Paulo/SP</span>
+                <!-- Contato (ocupando o espaço restante) -->
+                <div class="lg:col-span-1">
+                    <h4 class="font-bold text-lg mb-6 text-white border-b-2 border-pink-500/50 pb-2 inline-block">Contato</h4>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <i data-feather="map-pin" class="mr-3 w-5 h-5 text-pink-400 mt-1 flex-shrink-0"></i>
+                            <span class="text-gray-300">Aveninda principal<br>Jardim Dos ipyeis <br>Sumare /SP - 01234-567</span>
                         </li>
                         <li class="flex items-center">
-                            <i data-feather="phone" class="mr-2 w-4 h-4"></i>
-                            <span class="text-gray-300">(11) 9876-5432</span>
+                            <i data-feather="phone" class="mr-3 w-5 h-5 text-pink-400"></i>
+                            <span class="text-gray-300">(19) 9876-5432</span>
                         </li>
                         <li class="flex items-center">
-                            <i data-feather="mail" class="mr-2 w-4 h-4"></i>
+                            <i data-feather="mail" class="mr-3 w-5 h-5 text-pink-400"></i>
                             <span class="text-gray-300">contato@gracapresentes.com.br</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i data-feather="clock" class="mr-3 w-5 h-5 text-pink-400"></i>
+                            <span class="text-gray-300">Seg à Sex: 9h-18h<br>Sábado: 9h-13h</span>
                         </li>
                     </ul>
                 </div>
             </div>
             
-            <div class="border-t border-gray-700 mt-12 pt-8 text-center text-gray-400">
-                <p>&copy; 2024 Graça Presentes. Todos os direitos reservados.</p>
+            <!-- Bottom Bar -->
+            <div class="border-t border-gray-700 mt-12 pt-8 text-center">
+                <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                    <p class="text-gray-400">&copy; 2025 Graça Presentes. Todos os direitos reservados.</p>
+                    <div class="flex space-x-6 text-gray-400 text-sm">
+                        <a href="#" class="hover:text-pink-300 transition">Privacidade</a>
+                        <a href="#" class="hover:text-pink-300 transition">Termos</a>
+                        <a href="#" class="hover:text-pink-300 transition">Cookies</a>
+                    </div>
+                </div>
             </div>
         </div>
     </footer>
