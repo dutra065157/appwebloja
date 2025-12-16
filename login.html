@@ -1,129 +1,140 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login Administrativo - Graça Presentes</title>
     <script src="config.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-    <link rel="stylesheet" href="style/style.css">
-</head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <link rel="stylesheet" href="style/style.css" />
+  </head>
+  <body class="bg-gray-100 min-h-screen flex items-center justify-center">
     <div class="max-w-md w-full">
-        <div class="text-center mb-8">
-            <div class="w-20 h-20 rounded-full bg-pink-100 flex items-center justify-center mx-auto mb-4">
-                <i data-feather="gift" class="text-pink-600 w-10 h-10"></i>
-            </div>
-            <h1 class="text-3xl font-bold text-pink-600">Graça Presentes</h1>
-            <p class="text-gray-600 mt-2">Painel Administrativo</p>
+      <div class="text-center mb-8">
+        <div
+          class="w-20 h-20 rounded-full bg-pink-100 flex items-center justify-center mx-auto mb-4"
+        >
+          <i data-feather="gift" class="text-pink-600 w-10 h-10"></i>
         </div>
+        <h1 class="text-3xl font-bold text-pink-600">Graça Presentes</h1>
+        <p class="text-gray-600 mt-2">Painel Administrativo</p>
+      </div>
 
-        <div class="bg-white rounded-lg shadow-md p-8">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">🔐 Acesso Restrito</h2>
-            
-            <form id="loginForm" class="space-y-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Senha Administrativa</label>
-                    <input type="password" id="senha" required 
-                           class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                           placeholder="Digite a senha de administrador">
-                </div>
+      <div class="bg-white rounded-lg shadow-md p-8">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">
+          🔐 Acesso Restrito
+        </h2>
 
-                <button type="submit" 
-                        class="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white py-3 px-6 rounded-lg hover:from-pink-600 hover:to-rose-600 transition duration-200 font-semibold shadow-lg hover:shadow-xl">
-                    Entrar no Painel
-                </button>
+        <form id="loginForm" class="space-y-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Senha Administrativa</label
+            >
+            <input
+              type="password"
+              id="senha"
+              required
+              class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+              placeholder="Digite a senha de administrador"
+            />
+          </div>
 
-                <p class="text-center text-sm text-gray-500">
-                    <a href="index.html" class="text-pink-600 hover:text-pink-700">
-                        ← Voltar para a loja
-                    </a>
-                </p>
-            </form>
-        </div>
+          <button
+            type="submit"
+            class="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white py-3 px-6 rounded-lg hover:from-pink-600 hover:to-rose-600 transition duration-200 font-semibold shadow-lg hover:shadow-xl"
+          >
+            Entrar no Painel
+          </button>
 
-        <p class="text-center text-gray-500 text-sm mt-6">
-            Apenas funcionários autorizados têm acesso a esta área
-        </p>
+          <p class="text-center text-sm text-gray-500">
+            <a href="index.html" class="text-pink-600 hover:text-pink-700">
+              ← Voltar para a loja
+            </a>
+          </p>
+        </form>
+      </div>
+
+      <p class="text-center text-gray-500 text-sm mt-6">
+        Apenas funcionários autorizados têm acesso a esta área
+      </p>
     </div>
 
-    
-
     <script>
+      feather.replace();
 
-        
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
 
-        feather.replace();
+          const senha = document.getElementById("senha").value;
+          const button = this.querySelector('button[type="submit"]');
+          const originalText = button.innerHTML;
+          button.innerHTML = "⏳ Verificando...";
+          button.disabled = true;
 
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const senha = document.getElementById('senha').value;
-            const button = this.querySelector('button[type="submit"]');
-            const originalText = button.innerHTML;
-            button.innerHTML = '⏳ Verificando...';
-            button.disabled = true;
+          try {
+            // Aqui você definiria a senha do administrador
+            const SENHA_ADMIN = "graca123"; // Altere esta senha!
 
-            try {
-                // Aqui você definiria a senha do administrador
-                const SENHA_ADMIN = "graca123"; // Altere esta senha!
-                
-                if (senha === SENHA_ADMIN) {
-                    // Gerar token simples (em produção, use JWT)
-                    const token = btoa(`admin:${Date.now()}`);
-                    localStorage.setItem('admin_token', token);
-                    
-                    mostrarFeedback('✅ Login realizado com sucesso!', 'success');
-                    setTimeout(() => {
-                        window.location.href = 'admin.html';
-                    }, 1000);
-                } else {
-                    throw new Error('Senha incorreta');
-                }
-            } catch (error) {
-                mostrarFeedback('❌ ' + error.message, 'error');
-                button.innerHTML = originalText;
-                button.disabled = false;
+            if (senha === SENHA_ADMIN) {
+              // Gerar token simples (em produção, use JWT)
+              const token = btoa(`admin:${Date.now()}`);
+              localStorage.setItem("admin_token", token);
+
+              mostrarFeedback("✅ Login realizado com sucesso!", "success");
+              setTimeout(() => {
+                window.location.href = "admin.html";
+              }, 1000);
+            } else {
+              throw new Error("Senha incorreta");
             }
+          } catch (error) {
+            mostrarFeedback("❌ " + error.message, "error");
+            button.innerHTML = originalText;
+            button.disabled = false;
+          }
         });
 
-        function mostrarFeedback(mensagem, tipo) {
-            const feedbackAnterior = document.querySelector('.login-feedback');
-            if (feedbackAnterior) {
-                feedbackAnterior.remove();
-            }
+      function mostrarFeedback(mensagem, tipo) {
+        const feedbackAnterior = document.querySelector(".login-feedback");
+        if (feedbackAnterior) {
+          feedbackAnterior.remove();
+        }
 
-            const feedback = document.createElement('div');
-            feedback.className = `login-feedback fixed top-4 right-4 z-50 p-4 rounded-xl shadow-lg transform translate-x-full transition-transform duration-300 ${
-                tipo === 'success' ? 'bg-green-500' : 'bg-red-500'
-            } text-white`;
-            feedback.innerHTML = `
+        const feedback = document.createElement("div");
+        feedback.className = `login-feedback fixed top-4 right-4 z-50 p-4 rounded-xl shadow-lg transform translate-x-full transition-transform duration-300 ${
+          tipo === "success" ? "bg-green-500" : "bg-red-500"
+        } text-white`;
+        feedback.innerHTML = `
                 <div class="flex items-center">
                     <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mr-3">
-                        <i data-feather="${tipo === 'success' ? 'check' : 'alert-triangle'}" class="w-5 h-5"></i>
+                        <i data-feather="${
+                          tipo === "success" ? "check" : "alert-triangle"
+                        }" class="w-5 h-5"></i>
                     </div>
                     <div>
                         <p class="font-semibold">${mensagem}</p>
                     </div>
                 </div>
             `;
-            
-            document.body.appendChild(feedback);
-            feather.replace();
-            
-            setTimeout(() => feedback.classList.remove('translate-x-full'), 100);
-            
-            setTimeout(() => {
-                feedback.classList.add('translate-x-full');
-                setTimeout(() => feedback.remove(), 300);
-            }, 4000);
-        }
 
-        // Tentar redirecionar se já estiver logado
-        if (localStorage.getItem('admin_token')) {
-            window.location.href = 'admin.html';
-        }
+        document.body.appendChild(feedback);
+        feather.replace();
+
+        setTimeout(() => feedback.classList.remove("translate-x-full"), 100);
+
+        setTimeout(() => {
+          feedback.classList.add("translate-x-full");
+          setTimeout(() => feedback.remove(), 300);
+        }, 4000);
+      }
+
+      // Tentar redirecionar se já estiver logado
+      if (localStorage.getItem("admin_token")) {
+        window.location.href = "admin.html";
+      }
     </script>
-</body>
+  </body>
 </html>

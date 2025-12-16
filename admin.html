@@ -1,659 +1,878 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Painel Administrativo - Graça Presentes</title>
     <script src="config.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-    <link rel="stylesheet" href="/style/style.css">
-</head>
-<body class="bg-gray-100 min-h-screen">
+    <link rel="stylesheet" href="/style/style.css" />
+  </head>
+  <body class="bg-gray-100 min-h-screen">
     <!-- Header -->
-    <header class="gradient-bg shadow-sm sticky top-0 z-50 backdrop-blur-sm bg-white/95">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <!-- Logo -->
-            <div class="flex items-center">
-                <div class="w-12 h-12 rounded-full bg-pink-100 flex items-center justify-center mr-3 transition-transform hover:scale-105">
-                    <i data-feather="gift" class="text-pink-600 w-6 h-6"></i>
-                </div>
-                <h1 class="text-2xl font-bold text-pink-600 font-serif">Graça Presentes</h1>
-            </div>
-            
-            <nav class="hidden md:block">
-                <ul class="flex space-x-8">
-                    <li><a href="javascript:void(0)" onclick="fazerLogout()" 
-                           class="nav-link font-medium hover:text-pink-600 transition">Sair</a></li>
-                    <li><a href="produtos.html" class="nav-link font-medium hover:text-pink-600 transition">Ver Loja</a></li>
-                </ul>
-            </nav>
-
-            <!-- Mobile Menu Button -->
-            <button class="md:hidden p-2 rounded-full hover:bg-pink-100 transition" id="mobile-menu-button">
-                <i data-feather="menu"></i>
-            </button>
+    <header
+      class="gradient-bg shadow-sm sticky top-0 z-50 backdrop-blur-sm bg-white/95"
+    >
+      <div
+        class="container mx-auto px-4 py-3 flex justify-between items-center"
+      >
+        <!-- Logo -->
+        <div class="flex items-center">
+          <div
+            class="w-12 h-12 rounded-full bg-pink-100 flex items-center justify-center mr-3 transition-transform hover:scale-105"
+          >
+            <i data-feather="gift" class="text-pink-600 w-6 h-6"></i>
+          </div>
+          <h1 class="text-2xl font-bold text-pink-600 font-serif">
+            Graça Presentes
+          </h1>
         </div>
 
-        <!-- Mobile Menu -->
-        <div class="md:hidden hidden bg-white/95 backdrop-blur-sm shadow-xl border-t" id="mobile-menu">
-            <div class="container mx-auto px-4 py-4">
-                <ul class="space-y-3">
-                    <li><a href="produtos.html" class="block py-3 font-medium text-gray-600 hover:text-pink-600 transition pl-4">Ver Loja</a></li>
-                    <li><a href="javascript:void(0)" onclick="fazerLogout()" class="block py-3 font-medium text-gray-600 hover:text-pink-600 transition pl-4">Sair</a></li>
-                </ul>
-            </div>
+        <nav class="hidden md:block">
+          <ul class="flex space-x-8">
+            <li>
+              <a
+                href="javascript:void(0)"
+                onclick="fazerLogout()"
+                class="nav-link font-medium hover:text-pink-600 transition"
+                >Sair</a
+              >
+            </li>
+            <li>
+              <a
+                href="produtos.html"
+                class="nav-link font-medium hover:text-pink-600 transition"
+                >Ver Loja</a
+              >
+            </li>
+          </ul>
+        </nav>
+
+        <!-- Mobile Menu Button -->
+        <button
+          class="md:hidden p-2 rounded-full hover:bg-pink-100 transition"
+          id="mobile-menu-button"
+        >
+          <i data-feather="menu"></i>
+        </button>
+      </div>
+
+      <!-- Mobile Menu -->
+      <div
+        class="md:hidden hidden bg-white/95 backdrop-blur-sm shadow-xl border-t"
+        id="mobile-menu"
+      >
+        <div class="container mx-auto px-4 py-4">
+          <ul class="space-y-3">
+            <li>
+              <a
+                href="produtos.html"
+                class="block py-3 font-medium text-gray-600 hover:text-pink-600 transition pl-4"
+                >Ver Loja</a
+              >
+            </li>
+            <li>
+              <a
+                href="javascript:void(0)"
+                onclick="fazerLogout()"
+                class="block py-3 font-medium text-gray-600 hover:text-pink-600 transition pl-4"
+                >Sair</a
+              >
+            </li>
+          </ul>
         </div>
+      </div>
     </header>
 
     <div class="container mx-auto px-4 py-8">
-        <!-- Cabeçalho -->
-        <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-pink-600">🎁 Graça Presentes</h1>
-            <p class="text-gray-600">Painel Administrativo - Cadastro de Produtos</p>
-        </div>
+      <!-- Cabeçalho -->
+      <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-pink-600">🎁 Graça Presentes</h1>
+        <p class="text-gray-600">
+          Painel Administrativo - Cadastro de Produtos
+        </p>
+      </div>
 
-        <!-- Formulário de Cadastro -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 class="text-2xl font-semibold mb-6 text-gray-800">➕ Adicionar Novo Produto</h2>
-            
-            <form id="produtoForm" class="space-y-6">
-                <!-- Informações Básicas -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">📝 Nome do Produto *</label>
-                        <input type="text" name="nome" required 
-                               class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                               placeholder="Ex: Buquê de Rosas Vermelhas">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">📂 Categoria *</label>
-                        <select name="categoria" required
-                                class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-500 focus:border-transparent">
-                            <option value="">Selecione uma categoria</option>
-                            <option value="Flores">🌷 Flores</option>
-                            <option value="Doces">🍫 Doces</option>
-                            <option value="Pelúcias">🧸 Pelúcias</option>
-                            <option value="Cosméticos">💄 Cosméticos</option>
-                            <option value="Kits">🎁 Kits</option>
-                            <option value="Decoração">🏠 Decoração</option>
-                            <option value="Joias">💎 Joias</option>
-                            <option value="Românticos">❤️ Românticos</option>
-                        </select>
-                    </div>
-                </div>
+      <!-- Formulário de Cadastro -->
+      <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h2 class="text-2xl font-semibold mb-6 text-gray-800">
+          ➕ Adicionar Novo Produto
+        </h2>
 
-                <!-- Preços -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">💰 Preço (R$) *</label>
-                        <input type="number" step="0.01" name="preco" required 
-                               class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                               placeholder="89.90">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">🏷️ Preço Original (opcional)</label>
-                        <input type="number" step="0.01" name="precoOriginal" 
-                               class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                               placeholder="99.90">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">🎯 Desconto (%)</label>
-                        <input type="number" name="desconto" min="0" max="100" value="0"
-                               class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-500 focus:border-transparent">
-                    </div>
-                </div>
-
-                <!-- Descrição -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">📄 Descrição do Produto</label>
-                    <textarea name="descricao" rows="3" 
-                              class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-                              placeholder="Descreva o produto detalhadamente..."></textarea>
-                </div>
-
-                <!-- Upload de Imagem -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">🖼️ Imagem do Produto (opcional)</label>
-                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center transition-colors hover:border-pink-400">
-                        <input type="file" id="imagemInput" accept="image/*" class="hidden" 
-                               onchange="previewImagem(event)">
-                        
-                        <div id="uploadArea" class="cursor-pointer">
-                            <div class="mx-auto w-12 h-12 text-gray-400 mb-3">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                    </path>
-                                </svg>
-                            </div>
-                            <p class="text-gray-600">Clique para selecionar uma imagem</p>
-                            <p class="text-sm text-gray-500 mt-1">PNG, JPG, JPEG até 5MB</p>
-                        </div>
-                        
-                        <!-- Preview da Imagem -->
-                        <div id="previewContainer" class="hidden mt-4">
-                            <div class="image-preview-container">
-                                <img id="imagemPreview" class="mx-auto max-h-48 rounded-lg shadow-md object-cover">
-                                <div class="remove-image-btn" onclick="removerImagem()" title="Remover imagem">
-                                    ×
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-2">Dica: Use imagens quadradas (1:1) para melhor visualização</p>
-                </div>
-
-                <!-- Opções -->
-                <div class="flex items-center space-x-6">
-                    <div class="flex items-center">
-                        <input type="checkbox" name="novo" id="novo" class="w-4 h-4 text-pink-600 focus:ring-pink-500">
-                        <label for="novo" class="ml-2 text-sm text-gray-700">🆕 Produto Novo</label>
-                    </div>
-                    
-                    <div class="flex items-center">
-                        <input type="checkbox" name="maisVendido" id="maisVendido" class="w-4 h-4 text-pink-600 focus:ring-pink-500">
-                        <label for="maisVendido" class="ml-2 text-sm text-gray-700">🔥 Mais Vendido</label>
-                    </div>
-                </div>
-
-                <!-- Botão Submit -->
-                <button type="submit" 
-                        class="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white py-3 px-6 rounded-lg hover:from-pink-600 hover:to-rose-600 transition duration-200 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-                    🚀 Cadastrar Produto
-                </button>
-            </form>
-        </div>
-
-        <!-- Lista de Produtos -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-semibold text-gray-800">📦 Produtos Cadastrados</h2>
-                <div class="flex items-center space-x-3">
-                    <span id="totalProdutos" class="bg-pink-100 text-pink-800 px-3 py-1 rounded-full text-sm font-medium">0 produtos</span>
-                    <button onclick="exportarProdutos()" 
-                            class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-green-200 transition">
-                        📤 Exportar
-                    </button>
-                </div>
+        <form id="produtoForm" class="space-y-6">
+          <!-- Informações Básicas -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >📝 Nome do Produto *</label
+              >
+              <input
+                type="text"
+                name="nome"
+                required
+                class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                placeholder="Ex: Buquê de Rosas Vermelhas"
+              />
             </div>
-            
-            <div id="listaProdutos" class="space-y-4">
-                <!-- Produtos serão carregados aqui -->
-                <div class="text-center py-8 text-gray-500">
-                    <div class="text-4xl mb-2">📝</div>
-                    <p>Nenhum produto cadastrado ainda</p>
-                </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >📂 Categoria *</label
+              >
+              <select
+                name="categoria"
+                required
+                class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+              >
+                <option value="">Selecione uma categoria</option>
+                <option value="Flores">🌷 Flores</option>
+                <option value="Doces">🍫 Doces</option>
+                <option value="Pelúcias">🧸 Pelúcias</option>
+                <option value="Cosméticos">💄 Cosméticos</option>
+                <option value="Kits">🎁 Kits</option>
+                <option value="Decoração">🏠 Decoração</option>
+                <option value="Joias">💎 Joias</option>
+                <option value="Românticos">❤️ Românticos</option>
+              </select>
             </div>
+          </div>
+
+          <!-- Preços -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >💰 Preço (R$) *</label
+              >
+              <input
+                type="number"
+                step="0.01"
+                name="preco"
+                required
+                class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                placeholder="89.90"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >🏷️ Preço Original (opcional)</label
+              >
+              <input
+                type="number"
+                step="0.01"
+                name="precoOriginal"
+                class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                placeholder="99.90"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >🎯 Desconto (%)</label
+              >
+              <input
+                type="number"
+                name="desconto"
+                min="0"
+                max="100"
+                value="0"
+                class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+
+          <!-- Descrição -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >📄 Descrição do Produto</label
+            >
+            <textarea
+              name="descricao"
+              rows="3"
+              class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+              placeholder="Descreva o produto detalhadamente..."
+            ></textarea>
+          </div>
+
+          <!-- Upload de Imagem -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >🖼️ Imagem do Produto (opcional)</label
+            >
+            <div
+              class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center transition-colors hover:border-pink-400"
+            >
+              <input
+                type="file"
+                id="imagemInput"
+                accept="image/*"
+                class="hidden"
+                onchange="previewImagem(event)"
+              />
+
+              <div id="uploadArea" class="cursor-pointer">
+                <div class="mx-auto w-12 h-12 text-gray-400 mb-3">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    ></path>
+                  </svg>
+                </div>
+                <p class="text-gray-600">Clique para selecionar uma imagem</p>
+                <p class="text-sm text-gray-500 mt-1">PNG, JPG, JPEG até 5MB</p>
+              </div>
+
+              <!-- Preview da Imagem -->
+              <div id="previewContainer" class="hidden mt-4">
+                <div class="image-preview-container">
+                  <img
+                    id="imagemPreview"
+                    class="mx-auto max-h-48 rounded-lg shadow-md object-cover"
+                  />
+                  <div
+                    class="remove-image-btn"
+                    onclick="removerImagem()"
+                    title="Remover imagem"
+                  >
+                    ×
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p class="text-xs text-gray-500 mt-2">
+              Dica: Use imagens quadradas (1:1) para melhor visualização
+            </p>
+          </div>
+
+          <!-- Opções -->
+          <div class="flex items-center space-x-6">
+            <div class="flex items-center">
+              <input
+                type="checkbox"
+                name="novo"
+                id="novo"
+                class="w-4 h-4 text-pink-600 focus:ring-pink-500"
+              />
+              <label for="novo" class="ml-2 text-sm text-gray-700"
+                >🆕 Produto Novo</label
+              >
+            </div>
+
+            <div class="flex items-center">
+              <input
+                type="checkbox"
+                name="maisVendido"
+                id="maisVendido"
+                class="w-4 h-4 text-pink-600 focus:ring-pink-500"
+              />
+              <label for="maisVendido" class="ml-2 text-sm text-gray-700"
+                >🔥 Mais Vendido</label
+              >
+            </div>
+          </div>
+
+          <!-- Botão Submit -->
+          <button
+            type="submit"
+            class="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white py-3 px-6 rounded-lg hover:from-pink-600 hover:to-rose-600 transition duration-200 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+          >
+            🚀 Cadastrar Produto
+          </button>
+        </form>
+      </div>
+
+      <!-- Lista de Produtos -->
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-semibold text-gray-800">
+            📦 Produtos Cadastrados
+          </h2>
+          <div class="flex items-center space-x-3">
+            <span
+              id="totalProdutos"
+              class="bg-pink-100 text-pink-800 px-3 py-1 rounded-full text-sm font-medium"
+              >0 produtos</span
+            >
+            <button
+              onclick="exportarProdutos()"
+              class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-green-200 transition"
+            >
+              📤 Exportar
+            </button>
+          </div>
         </div>
+
+        <div id="listaProdutos" class="space-y-4">
+          <!-- Produtos serão carregados aqui -->
+          <div class="text-center py-8 text-gray-500">
+            <div class="text-4xl mb-2">📝</div>
+            <p>Nenhum produto cadastrado ainda</p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <style>
-        /* Estilos para o preview da imagem */
-        .image-preview-container {
-            position: relative;
-            display: inline-block;
-        }
-        .remove-image-btn {
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            background-color: rgba(239, 68, 68, 0.9); /* red-500 */
-            color: white;
-            border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
+      /* Estilos para o preview da imagem */
+      .image-preview-container {
+        position: relative;
+        display: inline-block;
+      }
+      .remove-image-btn {
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        background-color: rgba(239, 68, 68, 0.9); /* red-500 */
+        color: white;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
     </style>
 
     <script>
-        // Verificar se o usuário está logado
-        const adminToken = localStorage.getItem('admin_token');
-        if (!adminToken) {
-            // Redirecionar para tela de login se não estiver logado
-            window.location.href = 'login.html';
-        }
-        
-        feather.replace();
-        
-        // Variável para armazenar a imagem em Base64
-        let imagemBase64 = null;
+      // Verificar se o usuário está logado
+      const adminToken = localStorage.getItem("admin_token");
+      if (!adminToken) {
+        // Redirecionar para tela de login se não estiver logado
+        window.location.href = "login.html";
+      }
 
-        // Função para fazer logout seguro
-        function fazerLogout() {
-            // Remover token de autenticação
-            localStorage.removeItem('admin_token');
-            
-            // Limpar dados da sessão administrativa
-            sessionStorage.clear();
-            
-            // Opcional: Limpar também o carrinho (se quiser)
-            // localStorage.removeItem('carrinho');
-            
-            // Redirecionar para a página inicial
-            mostrarFeedback('🔒 Saindo do sistema...', 'info');
+      feather.replace();
+
+      // Variável para armazenar a imagem em Base64
+      let imagemBase64 = null;
+
+      // Função para fazer logout seguro
+      function fazerLogout() {
+        // Remover token de autenticação
+        localStorage.removeItem("admin_token");
+
+        // Limpar dados da sessão administrativa
+        sessionStorage.clear();
+
+        // Opcional: Limpar também o carrinho (se quiser)
+        // localStorage.removeItem('carrinho');
+
+        // Redirecionar para a página inicial
+        mostrarFeedback("🔒 Saindo do sistema...", "info");
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 1000);
+      }
+
+      // Sistema de timeout de sessão (30 minutos)
+      let idleTimer;
+      function resetIdleTimer() {
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => {
+          // Verificar se ainda está autenticado
+          const token = localStorage.getItem("admin_token");
+          if (token) {
+            mostrarFeedback(
+              "⏰ Sessão expirada por inatividade. Redirecionando...",
+              "warning"
+            );
             setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 1000);
+              fazerLogout();
+            }, 2000);
+          }
+        }, 30 * 60 * 1000); // 30 minutos
+      }
+
+      // Iniciar timer de inatividade ao carregar a página
+      resetIdleTimer();
+
+      // Resetar timer em eventos de interação
+      ["click", "mousemove", "keypress", "scroll"].forEach((event) => {
+        document.addEventListener(event, resetIdleTimer, { passive: true });
+      });
+
+      // Detectar quando a página perde o foco (usuário sai)
+      window.addEventListener("blur", function () {
+        // Não fazer logout imediato, apenas registrar
+        console.log("Página perdeu foco");
+      });
+
+      // Detectar quando a página volta a ter foco
+      window.addEventListener("focus", function () {
+        // Verificar se o token ainda existe
+        const token = localStorage.getItem("admin_token");
+        if (!token) {
+          mostrarFeedback(
+            "🔒 Sessão expirada. Redirecionando para login...",
+            "warning"
+          );
+          setTimeout(() => {
+            window.location.href = "login.html";
+          }, 1500);
+        } else {
+          resetIdleTimer(); // Resetar timer de inatividade
         }
+      });
 
-        // Sistema de timeout de sessão (30 minutos)
-        let idleTimer;
-        function resetIdleTimer() {
-            clearTimeout(idleTimer);
-            idleTimer = setTimeout(() => {
-                // Verificar se ainda está autenticado
-                const token = localStorage.getItem('admin_token');
-                if (token) {
-                    mostrarFeedback('⏰ Sessão expirada por inatividade. Redirecionando...', 'warning');
-                    setTimeout(() => {
-                        fazerLogout();
-                    }, 2000);
-                }
-            }, 30 * 60 * 1000); // 30 minutos
+      // Detectar quando o usuário está saindo da página (fechando aba/janela)
+      window.addEventListener("beforeunload", function (e) {
+        // Não fazer nada especial para não interferir na navegação
+        // O token permanecerá no localStorage até expirar ou ser removido manualmente
+      });
+
+      // Funções para manipulação de imagem
+      function previewImagem(event) {
+        const file = event.target.files[0];
+        if (file) {
+          // Verificar tamanho (max 5MB)
+          if (file.size > 5 * 1024 * 1024) {
+            mostrarFeedback("❌ A imagem deve ter no máximo 5MB", "error");
+            return;
+          }
+
+          // Verificar tipo
+          if (!file.type.match("image.*")) {
+            mostrarFeedback(
+              "❌ Por favor, selecione apenas arquivos de imagem",
+              "error"
+            );
+            return;
+          }
+
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            imagemBase64 = e.target.result;
+
+            // Mostrar preview
+            const previewImg = document.getElementById("imagemPreview");
+            previewImg.src = imagemBase64;
+
+            // Mostrar container do preview
+            document
+              .getElementById("previewContainer")
+              .classList.remove("hidden");
+            document.getElementById("uploadArea").classList.add("hidden");
+          };
+          reader.readAsDataURL(file);
         }
+      }
 
-        // Iniciar timer de inatividade ao carregar a página
-        resetIdleTimer();
-        
-        // Resetar timer em eventos de interação
-        ['click', 'mousemove', 'keypress', 'scroll'].forEach(event => {
-            document.addEventListener(event, resetIdleTimer, { passive: true });
+      function removerImagem() {
+        imagemBase64 = null;
+        document.getElementById("imagemInput").value = "";
+        document.getElementById("previewContainer").classList.add("hidden");
+        document.getElementById("uploadArea").classList.remove("hidden");
+      }
+
+      // Permitir clicar na área de upload
+      document
+        .getElementById("uploadArea")
+        .addEventListener("click", function () {
+          document.getElementById("imagemInput").click();
         });
 
-        // Detectar quando a página perde o foco (usuário sai)
-        window.addEventListener('blur', function() {
-            // Não fazer logout imediato, apenas registrar
-            console.log('Página perdeu foco');
-        });
+      // Cadastrar produto
+      document
+        .getElementById("produtoForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
 
-        // Detectar quando a página volta a ter foco
-        window.addEventListener('focus', function() {
-            // Verificar se o token ainda existe
-            const token = localStorage.getItem('admin_token');
-            if (!token) {
-                mostrarFeedback('🔒 Sessão expirada. Redirecionando para login...', 'warning');
-                setTimeout(() => {
-                    window.location.href = 'login.html';
-                }, 1500);
-            } else {
-                resetIdleTimer(); // Resetar timer de inatividade
-            }
-        });
+          const button = this.querySelector('button[type="submit"]');
+          const originalText = button.innerHTML;
+          button.innerHTML = "⏳ Cadastrando...";
+          button.disabled = true;
 
-        // Detectar quando o usuário está saindo da página (fechando aba/janela)
-        window.addEventListener('beforeunload', function(e) {
-            // Não fazer nada especial para não interferir na navegação
-            // O token permanecerá no localStorage até expirar ou ser removido manualmente
-        });
+          const formData = new FormData(this);
+          const produtoData = {
+            nome: formData.get("nome"),
+            preco: parseFloat(formData.get("preco")),
+            preco_original: formData.get("precoOriginal")
+              ? parseFloat(formData.get("precoOriginal"))
+              : null,
+            categoria: formData.get("categoria"),
+            descricao: formData.get("descricao"),
+            desconto: parseInt(formData.get("desconto") || 0),
+            novo: document.getElementById("novo").checked,
+            mais_vendido: document.getElementById("maisVendido").checked,
+          };
 
-        // Funções para manipulação de imagem
-        function previewImagem(event) {
-            const file = event.target.files[0];
-            if (file) {
-                // Verificar tamanho (max 5MB)
-                if (file.size > 5 * 1024 * 1024) {
-                    mostrarFeedback('❌ A imagem deve ter no máximo 5MB', 'error');
-                    return;
-                }
+          try {
+            // Usar a mesma URL da API que o index.html usa
+            const url = API_BASE_URL
+              ? `${API_BASE_URL}/api/produtos`
+              : "/api/produtos";
 
-                // Verificar tipo
-                if (!file.type.match('image.*')) {
-                    mostrarFeedback('❌ Por favor, selecione apenas arquivos de imagem', 'error');
-                    return;
-                }
+            // 1. Enviar dados do produto para a API
+            const response = await fetch(url, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${adminToken}`,
+              },
+              body: JSON.stringify(produtoData),
+            });
 
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    imagemBase64 = e.target.result;
-                    
-                    // Mostrar preview
-                    const previewImg = document.getElementById('imagemPreview');
-                    previewImg.src = imagemBase64;
-                    
-                    // Mostrar container do preview
-                    document.getElementById('previewContainer').classList.remove('hidden');
-                    document.getElementById('uploadArea').classList.add('hidden');
-                }
-                reader.readAsDataURL(file);
-            }
-        }
+            if (!response.ok) {
+              if (response.status === 401) {
+                mostrarFeedback(
+                  "🔒 Sessão expirada. Redirecionando...",
+                  "error"
+                );
+                setTimeout(() => fazerLogout(), 2000);
+                return;
+              }
 
-        function removerImagem() {
-            imagemBase64 = null;
-            document.getElementById('imagemInput').value = '';
-            document.getElementById('previewContainer').classList.add('hidden');
-            document.getElementById('uploadArea').classList.remove('hidden');
-        }
-
-        // Permitir clicar na área de upload
-        document.getElementById('uploadArea').addEventListener('click', function() {
-            document.getElementById('imagemInput').click();
-        });
-
-        // Cadastrar produto
-        document.getElementById('produtoForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const button = this.querySelector('button[type="submit"]');
-            const originalText = button.innerHTML;
-            button.innerHTML = '⏳ Cadastrando...';
-            button.disabled = true;
-            
-            const formData = new FormData(this);
-            const produtoData = {
-                nome: formData.get('nome'),
-                preco: parseFloat(formData.get('preco')),
-                preco_original: formData.get('precoOriginal') ? parseFloat(formData.get('precoOriginal')) : null,
-                categoria: formData.get('categoria'),
-                descricao: formData.get('descricao'),
-                desconto: parseInt(formData.get('desconto') || 0),
-                novo: document.getElementById('novo').checked,
-                mais_vendido: document.getElementById('maisVendido').checked
-            };
-
-            try {
-                // Usar a mesma URL da API que o index.html usa
-                const url = API_BASE_URL ? `${API_BASE_URL}/api/produtos` : '/api/produtos';
-                
-                // 1. Enviar dados do produto para a API
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${adminToken}`
-                    },
-                    body: JSON.stringify(produtoData)
-                });
-
-                if (!response.ok) {
-                    if (response.status === 401) {
-                        mostrarFeedback('🔒 Sessão expirada. Redirecionando...', 'error');
-                        setTimeout(() => fazerLogout(), 2000);
-                        return;
-                    }
-                    
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || 'Falha ao cadastrar produto');
-                }
-
-                const result = await response.json();
-                const produtoId = result.produto_id;
-
-                // 2. Se houver imagem, enviar para a API de upload
-                if (imagemBase64) {
-                    const uploadUrl = API_BASE_URL ? `${API_BASE_URL}/api/upload-imagem` : '/api/upload-imagem';
-                    const uploadResponse = await fetch(uploadUrl, {
-                        method: 'POST',
-                        headers: { 
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${adminToken}`
-                        },
-                        body: JSON.stringify({
-                            produto_id: produtoId,
-                            imagem_base64: imagemBase64
-                        })
-                    });
-                    if (!uploadResponse.ok) {
-                        throw new Error('Produto cadastrado, mas falha ao enviar imagem.');
-                    }
-                }
-
-                mostrarFeedback('✅ Produto cadastrado com sucesso!', 'success');
-                this.reset();
-                removerImagem();
-                carregarProdutos();
-                resetIdleTimer(); // Resetar timer após ação
-
-            } catch (error) {
-                console.error('Erro ao cadastrar produto:', error);
-                mostrarFeedback('❌ Erro ao cadastrar produto: ' + error.message, 'error');
-            } finally {
-                button.innerHTML = originalText;
-                button.disabled = false;
-            }
-        });
-
-        function mostrarFeedback(mensagem, tipo) {
-            // Remover feedback anterior se existir
-            const feedbackAnterior = document.querySelector('.form-feedback');
-            if (feedbackAnterior) {
-                feedbackAnterior.remove();
+              const errorData = await response.json();
+              throw new Error(errorData.error || "Falha ao cadastrar produto");
             }
 
-            const cores = {
-                'success': 'from-green-500 to-emerald-600',
-                'error': 'from-red-500 to-rose-600', 
-                'warning': 'from-yellow-500 to-amber-600',
-                'info': 'from-blue-500 to-cyan-600'
-            };
+            const result = await response.json();
+            const produtoId = result.produto_id;
 
-            const icones = {
-                'success': 'check',
-                'error': 'alert-triangle',
-                'warning': 'alert-circle',
-                'info': 'info'
-            };
+            // 2. Se houver imagem, enviar para a API de upload
+            if (imagemBase64) {
+              const uploadUrl = API_BASE_URL
+                ? `${API_BASE_URL}/api/upload-imagem`
+                : "/api/upload-imagem";
+              const uploadResponse = await fetch(uploadUrl, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${adminToken}`,
+                },
+                body: JSON.stringify({
+                  produto_id: produtoId,
+                  imagem_base64: imagemBase64,
+                }),
+              });
+              if (!uploadResponse.ok) {
+                throw new Error(
+                  "Produto cadastrado, mas falha ao enviar imagem."
+                );
+              }
+            }
 
-            const feedback = document.createElement('div');
-            feedback.className = `form-feedback fixed top-4 right-4 z-50 p-4 rounded-xl shadow-lg transform translate-x-full transition-transform duration-300 bg-gradient-to-r ${cores[tipo] || 'from-gray-500 to-gray-600'} text-white`;
-            feedback.innerHTML = `
+            mostrarFeedback("✅ Produto cadastrado com sucesso!", "success");
+            this.reset();
+            removerImagem();
+            carregarProdutos();
+            resetIdleTimer(); // Resetar timer após ação
+          } catch (error) {
+            console.error("Erro ao cadastrar produto:", error);
+            mostrarFeedback(
+              "❌ Erro ao cadastrar produto: " + error.message,
+              "error"
+            );
+          } finally {
+            button.innerHTML = originalText;
+            button.disabled = false;
+          }
+        });
+
+      function mostrarFeedback(mensagem, tipo) {
+        // Remover feedback anterior se existir
+        const feedbackAnterior = document.querySelector(".form-feedback");
+        if (feedbackAnterior) {
+          feedbackAnterior.remove();
+        }
+
+        const cores = {
+          success: "from-green-500 to-emerald-600",
+          error: "from-red-500 to-rose-600",
+          warning: "from-yellow-500 to-amber-600",
+          info: "from-blue-500 to-cyan-600",
+        };
+
+        const icones = {
+          success: "check",
+          error: "alert-triangle",
+          warning: "alert-circle",
+          info: "info",
+        };
+
+        const feedback = document.createElement("div");
+        feedback.className = `form-feedback fixed top-4 right-4 z-50 p-4 rounded-xl shadow-lg transform translate-x-full transition-transform duration-300 bg-gradient-to-r ${
+          cores[tipo] || "from-gray-500 to-gray-600"
+        } text-white`;
+        feedback.innerHTML = `
                 <div class="flex items-center">
                     <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mr-3">
-                        <i data-feather="${icones[tipo] || 'info'}" class="w-5 h-5"></i>
+                        <i data-feather="${
+                          icones[tipo] || "info"
+                        }" class="w-5 h-5"></i>
                     </div>
                     <div>
                         <p class="font-semibold">${mensagem}</p>
                     </div>
                 </div>
             `;
-            
-            document.body.appendChild(feedback);
-            feather.replace();
-            
-            // Animate in
-            setTimeout(() => feedback.classList.remove('translate-x-full'), 100);
-            
-            // Remove after delay
-            setTimeout(() => {
-                feedback.classList.add('translate-x-full');
-                setTimeout(() => feedback.remove(), 300);
-            }, 4000);
-        }
 
-        // Carregar produtos
-        async function carregarProdutos() {
-            const lista = document.getElementById('listaProdutos');
-            try {
-                // Usar a mesma URL da API que o index.html usa
-                const url = API_BASE_URL ? `${API_BASE_URL}/api/produtos` : '/api/produtos';
-                const response = await fetch(url);
-                if (!response.ok) throw new Error('Falha ao buscar produtos');
-                
-                const produtos = await response.json();
-                
-                document.getElementById('totalProdutos').textContent = `${produtos.length} produto${produtos.length !== 1 ? 's' : ''}`;
-                
-                if (produtos.length === 0) {
-                    lista.innerHTML = `
+        document.body.appendChild(feedback);
+        feather.replace();
+
+        // Animate in
+        setTimeout(() => feedback.classList.remove("translate-x-full"), 100);
+
+        // Remove after delay
+        setTimeout(() => {
+          feedback.classList.add("translate-x-full");
+          setTimeout(() => feedback.remove(), 300);
+        }, 4000);
+      }
+
+      // Carregar produtos
+      async function carregarProdutos() {
+        const lista = document.getElementById("listaProdutos");
+        try {
+          // Usar a mesma URL da API que o index.html usa
+          const url = API_BASE_URL
+            ? `${API_BASE_URL}/api/produtos`
+            : "/api/produtos";
+          const response = await fetch(url);
+          if (!response.ok) throw new Error("Falha ao buscar produtos");
+
+          const produtos = await response.json();
+
+          document.getElementById("totalProdutos").textContent = `${
+            produtos.length
+          } produto${produtos.length !== 1 ? "s" : ""}`;
+
+          if (produtos.length === 0) {
+            lista.innerHTML = `
                         <div class="text-center py-8 text-gray-500">
                             <div class="text-4xl mb-2">📝</div>
                             <p>Nenhum produto cadastrado ainda</p>
                             <p class="text-sm mt-2">Use o formulário acima para adicionar seu primeiro produto!</p>
                         </div>
                     `;
-                    return;
-                }
-                
-                lista.innerHTML = produtos.map(produto => {
-                    const temImagem = !!produto.imagem_url;
-                    // Ajuste: Construir a URL completa da imagem usando a API_BASE_URL
-                    const imagemSrc = temImagem 
-                        ? (API_BASE_URL ? `${API_BASE_URL}${produto.imagem_url}` : produto.imagem_url) 
-                        : '';
-                    
-                    return `
+            return;
+          }
+
+          lista.innerHTML = produtos
+            .map((produto) => {
+              const temImagem = !!produto.imagem_url;
+              // Ajuste: Construir a URL completa da imagem usando a API_BASE_URL
+              const imagemSrc = temImagem
+                ? API_BASE_URL
+                  ? `${API_BASE_URL}${produto.imagem_url}`
+                  : produto.imagem_url
+                : "";
+
+              return `
                     <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition group">
                         <div class="flex items-center space-x-4">
-                            ${temImagem ? 
-                                `<div class="w-20 h-20 flex-shrink-0">
+                            ${
+                              temImagem
+                                ? `<div class="w-20 h-20 flex-shrink-0">
                                     <img src="${imagemSrc}" 
                                          class="w-full h-full object-cover rounded-lg shadow-sm"
                                          alt="${produto.nome}">
-                                </div>` :
-                                `<div class="w-20 h-20 ${produto.cor_gradiente || 'bg-gray-100'} rounded-lg flex items-center justify-center flex-shrink-0">
-                                    <i data-feather="${produto.icone || 'gift'}" class="w-8 h-8 text-white"></i>
+                                </div>`
+                                : `<div class="w-20 h-20 ${
+                                    produto.cor_gradiente || "bg-gray-100"
+                                  } rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i data-feather="${
+                                      produto.icone || "gift"
+                                    }" class="w-8 h-8 text-white"></i>
                                 </div>`
                             }
                             <div class="flex-1">
                                 <div class="flex justify-between items-start">
                                     <div>
-                                        <h3 class="font-semibold text-lg text-gray-800">${produto.nome}</h3>
-                                        <p class="text-gray-600 text-sm mt-1 line-clamp-2">${produto.descricao || 'Sem descrição'}</p>
+                                        <h3 class="font-semibold text-lg text-gray-800">${
+                                          produto.nome
+                                        }</h3>
+                                        <p class="text-gray-600 text-sm mt-1 line-clamp-2">${
+                                          produto.descricao || "Sem descrição"
+                                        }</p>
                                     </div>
-                                    <button onclick="removerProduto('${produto.id}')" 
+                                    <button onclick="removerProduto('${
+                                      produto.id
+                                    }')" 
                                             class="text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
                                             title="Remover produto">
                                         <i data-feather="trash-2" class="w-4 h-4"></i>
                                     </button>
                                 </div>
                                 <div class="flex items-center space-x-4 mt-2">
-                                    <span class="text-pink-600 font-bold">R$ ${produto.preco.toFixed(2).replace('.', ',')}</span>
-                                    <span class="bg-${produto.cor || 'gray'}-100 text-${produto.cor || 'gray'}-600 text-xs px-2 py-1 rounded-full whitespace-nowrap flex-shrink-0">${produto.categoria}</span>
-                                    ${produto.desconto > 0 ? 
-                                        `<span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">${produto.desconto}% OFF</span>` : ''}
+                                    <span class="text-pink-600 font-bold">R$ ${produto.preco
+                                      .toFixed(2)
+                                      .replace(".", ",")}</span>
+                                    <span class="bg-${
+                                      produto.cor || "gray"
+                                    }-100 text-${
+                produto.cor || "gray"
+              }-600 text-xs px-2 py-1 rounded-full whitespace-nowrap flex-shrink-0">${
+                produto.categoria
+              }</span>
+                                    ${
+                                      produto.desconto > 0
+                                        ? `<span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">${produto.desconto}% OFF</span>`
+                                        : ""
+                                    }
                                 </div>
                                 <div class="flex space-x-2 mt-2">
-                                    ${produto.novo ? '<span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Novo</span>' : ''}
-                                    ${produto.mais_vendido ? '<span class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs">Mais Vendido</span>' : ''}
+                                    ${
+                                      produto.novo
+                                        ? '<span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Novo</span>'
+                                        : ""
+                                    }
+                                    ${
+                                      produto.mais_vendido
+                                        ? '<span class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs">Mais Vendido</span>'
+                                        : ""
+                                    }
                                     <span class="text-xs text-gray-400">
-                                        ID: ${produto.id ? produto.id.slice(-6) : 'N/A'}
+                                        ID: ${
+                                          produto.id
+                                            ? produto.id.slice(-6)
+                                            : "N/A"
+                                        }
                                     </span>
                                 </div>
                             </div>
                         </div>
                     </div>
                     `;
-                }).join('');
-                
-                feather.replace();
-                resetIdleTimer(); // Resetar timer após carregar produtos
-            } catch (error) {
-                console.error('Erro ao carregar produtos:', error);
-                lista.innerHTML = '<p class="text-red-500 text-center">Erro ao carregar produtos</p>';
+            })
+            .join("");
+
+          feather.replace();
+          resetIdleTimer(); // Resetar timer após carregar produtos
+        } catch (error) {
+          console.error("Erro ao carregar produtos:", error);
+          lista.innerHTML =
+            '<p class="text-red-500 text-center">Erro ao carregar produtos</p>';
+        }
+      }
+
+      async function removerProduto(id) {
+        if (confirm("Tem certeza que deseja remover este produto?")) {
+          try {
+            const url = API_BASE_URL
+              ? `${API_BASE_URL}/api/produtos/${id}`
+              : `/api/produtos/${id}`;
+            const response = await fetch(url, {
+              method: "DELETE",
+              headers: {
+                Authorization: `Bearer ${adminToken}`,
+              },
+            });
+
+            if (!response.ok) {
+              if (response.status === 401) {
+                mostrarFeedback(
+                  "🔒 Sessão expirada. Redirecionando...",
+                  "error"
+                );
+                setTimeout(() => fazerLogout(), 2000);
+                return;
+              }
+
+              const errorData = await response.json();
+              throw new Error(errorData.error || "Falha ao remover produto");
             }
+
+            mostrarFeedback("✅ Produto removido com sucesso!", "success");
+            carregarProdutos();
+            resetIdleTimer(); // Resetar timer após ação
+          } catch (error) {
+            console.error("Erro ao remover produto:", error);
+            mostrarFeedback(
+              "❌ Erro ao remover produto: " + error.message,
+              "error"
+            );
+          }
+        }
+      }
+
+      async function exportarProdutos() {
+        try {
+          const url = API_BASE_URL
+            ? `${API_BASE_URL}/api/produtos`
+            : "/api/produtos";
+          const response = await fetch(url);
+          if (!response.ok)
+            throw new Error("Falha ao buscar produtos para exportação");
+          const produtos = await response.json();
+
+          const dadosString = JSON.stringify(produtos, null, 2);
+          const blob = new Blob([dadosString], { type: "application/json" });
+          const urlObject = URL.createObjectURL(blob);
+
+          const a = document.createElement("a");
+          a.href = urlObject;
+          a.download = `produtos_graca_presentes_${
+            new Date().toISOString().split("T")[0]
+          }.json`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(urlObject);
+
+          mostrarFeedback("✅ Produtos exportados com sucesso!", "success");
+          resetIdleTimer(); // Resetar timer após ação
+        } catch (error) {
+          mostrarFeedback(`❌ ${error.message}`, "error");
+        }
+      }
+
+      // Carregar produtos ao iniciar
+      carregarProdutos();
+
+      // Adicionar botão de logout também no mobile se necessário
+      document.addEventListener("DOMContentLoaded", function () {
+        // Garantir que o botão de logout funcione
+        const logoutLink = document.querySelector('a[onclick*="fazerLogout"]');
+        if (logoutLink) {
+          logoutLink.addEventListener("click", function (e) {
+            e.preventDefault();
+            fazerLogout();
+          });
         }
 
-        async function removerProduto(id) {
-            if (confirm('Tem certeza que deseja remover este produto?')) {
-                try {
-                    const url = API_BASE_URL ? `${API_BASE_URL}/api/produtos/${id}` : `/api/produtos/${id}`;
-                    const response = await fetch(url, {
-                        method: 'DELETE',
-                        headers: {
-                            'Authorization': `Bearer ${adminToken}`
-                        }
-                    });
+        inicializarMobileMenu();
+      });
 
-                    if (!response.ok) {
-                        if (response.status === 401) {
-                            mostrarFeedback('🔒 Sessão expirada. Redirecionando...', 'error');
-                            setTimeout(() => fazerLogout(), 2000);
-                            return;
-                        }
-                        
-                        const errorData = await response.json();
-                        throw new Error(errorData.error || 'Falha ao remover produto');
-                    }
+      function inicializarMobileMenu() {
+        const menuButton = document.getElementById("mobile-menu-button");
+        const mobileMenu = document.getElementById("mobile-menu");
 
-                    mostrarFeedback('✅ Produto removido com sucesso!', 'success');
-                    carregarProdutos();
-                    resetIdleTimer(); // Resetar timer após ação
-                } catch (error) {
-                    console.error('Erro ao remover produto:', error);
-                    mostrarFeedback('❌ Erro ao remover produto: ' + error.message, 'error');
-                }
+        if (menuButton && mobileMenu) {
+          menuButton.addEventListener("click", () => {
+            mobileMenu.classList.toggle("hidden");
+            const icon = menuButton.querySelector("i");
+            if (icon) {
+              icon.setAttribute(
+                "data-feather",
+                mobileMenu.classList.contains("hidden") ? "menu" : "x"
+              );
+              feather.replace();
             }
+          });
+
+          document.addEventListener("click", (e) => {
+            if (
+              !menuButton.contains(e.target) &&
+              !mobileMenu.contains(e.target)
+            ) {
+              mobileMenu.classList.add("hidden");
+              menuButton
+                .querySelector("i")
+                ?.setAttribute("data-feather", "menu");
+              feather.replace();
+            }
+          });
         }
-
-        async function exportarProdutos() {
-            try {
-                const url = API_BASE_URL ? `${API_BASE_URL}/api/produtos` : '/api/produtos';
-                const response = await fetch(url);
-                if (!response.ok) throw new Error('Falha ao buscar produtos para exportação');
-                const produtos = await response.json();
-
-                const dadosString = JSON.stringify(produtos, null, 2);
-                const blob = new Blob([dadosString], { type: 'application/json' });
-                const urlObject = URL.createObjectURL(blob);
-                
-                const a = document.createElement('a');
-                a.href = urlObject;
-                a.download = `produtos_graca_presentes_${new Date().toISOString().split('T')[0]}.json`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(urlObject);
-                
-                mostrarFeedback('✅ Produtos exportados com sucesso!', 'success');
-                resetIdleTimer(); // Resetar timer após ação
-            } catch (error) {
-                mostrarFeedback(`❌ ${error.message}`, 'error');
-            }
-        }
-
-        // Carregar produtos ao iniciar
-        carregarProdutos();
-
-        // Adicionar botão de logout também no mobile se necessário
-        document.addEventListener('DOMContentLoaded', function() {
-            // Garantir que o botão de logout funcione
-            const logoutLink = document.querySelector('a[onclick*="fazerLogout"]');
-            if (logoutLink) {
-                logoutLink.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    fazerLogout();
-                });
-            }
-
-            inicializarMobileMenu();
-        });
-
-        function inicializarMobileMenu() {
-            const menuButton = document.getElementById('mobile-menu-button');
-            const mobileMenu = document.getElementById('mobile-menu');
-            
-            if (menuButton && mobileMenu) {
-                menuButton.addEventListener('click', () => {
-                    mobileMenu.classList.toggle('hidden');
-                    const icon = menuButton.querySelector('i');
-                    if (icon) {
-                        icon.setAttribute('data-feather', 
-                            mobileMenu.classList.contains('hidden') ? 'menu' : 'x'
-                        );
-                        feather.replace();
-                    }
-                });
-
-                document.addEventListener('click', (e) => {
-                    if (!menuButton.contains(e.target) && !mobileMenu.contains(e.target)) {
-                        mobileMenu.classList.add('hidden');
-                        menuButton.querySelector('i')?.setAttribute('data-feather', 'menu');
-                        feather.replace();
-                    }
-                });
-            }
-        }
+      }
     </script>
-</body>
+  </body>
 </html>
