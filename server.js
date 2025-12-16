@@ -3,6 +3,7 @@ const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
 const mongoose = require("mongoose");
+const cloudinary = require("cloudinary").v2;
 require("dotenv").config(); // Garante que as variáveis de ambiente sejam carregadas
 
 // Configuração
@@ -20,13 +21,18 @@ const WHATSAPP_CONFIG = {
 app.use(cors()); // Habilita CORS para todas as rotas
 app.use(express.json({ limit: "10mb" })); // Aumenta o limite para receber imagens em base64
 
-// 📁 Servir a pasta de uploads como estática
-const uploadsDir = path.join(__dirname, "uploads");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir); // Cria a pasta 'uploads' se ela não existir
-}
-app.use("/uploads", express.static(uploadsDir));
 app.use(express.static(__dirname)); // Serve arquivos estáticos (html, css, js) da pasta raiz
+
+// --- ☁️ Configuração do Cloudinary ---
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+console.log(
+  "☁️  Cloudinary configurado:",
+  process.env.CLOUDINARY_CLOUD_NAME ? "Sim" : "Não"
+);
 
 // --- 몽 Conexão com o MongoDB usando Mongoose ---
 const MONGO_URI = process.env.MONGODB_URI;
@@ -83,6 +89,7 @@ const produtoSchema = new mongoose.Schema({
   categoria: { type: String, required: true },
   descricao: String,
   imagem_url: String,
+  cloudinary_public_id: String, // ID da imagem no Cloudinary para podermos deletá-la
   icone: String,
   cor: String,
   cor_gradiente: String,
@@ -247,7 +254,6 @@ app.post("/api/pedidos", async (req, res, next) => {
 });
 
 // Rota para upload de imagem
-// Esta rota agora salva o arquivo localmente e atualiza o produto no DB.
 app.post("/api/upload-imagem", authMiddleware, async (req, res, next) => {
   try {
     const { imagem_base64, produto_id } = req.body;
@@ -269,37 +275,26 @@ app.post("/api/upload-imagem", authMiddleware, async (req, res, next) => {
       return res.status(404).json({ error: "Produto não encontrado." });
     }
 
-    // 3. EXTRAIR E SALVAR A IMAGEM
-    const matches = imagem_base64.match(/^data:image\/(.+);base64,(.+)$/);
-    if (!matches || matches.length !== 3) {
-      return res
-        .status(400)
-        .json({ error: "Formato de imagem base64 inválido." });
-    }
+    // 3. FAZER UPLOAD PARA O CLOUDINARY
+    const uploadResult = await cloudinary.uploader.upload(imagem_base64, {
+      folder: "graca-presentes", // Cria uma pasta no Cloudinary para organizar
+      public_id: `produto_${produto_id}`, // Usa o ID do produto como nome do arquivo
+      overwrite: true, // Sobrescreve se já existir uma imagem para este produto
+    });
 
-    const imageType = matches[1].toLowerCase(); // jpg, png, etc.
-    const imageBuffer = Buffer.from(matches[2], "base64");
-
-    // Usar o ID real do MongoDB para nome do arquivo
-    const imageName = `produto_${produto_id}.${imageType}`;
-    const imagePath = path.join(uploadsDir, imageName);
-    const imageUrl = `/uploads/${imageName}`;
-
-    // 4. SALVAR NO DISCO
-    fs.writeFileSync(imagePath, imageBuffer);
-
-    // 5. ATUALIZAR O PRODUTO
-    produto.imagem_url = imageUrl;
+    // 4. ATUALIZAR O PRODUTO NO BANCO DE DADOS
+    produto.imagem_url = uploadResult.secure_url; // URL segura da imagem no Cloudinary
+    produto.cloudinary_public_id = uploadResult.public_id; // ID para futura deleção
     await produto.save();
 
     res.status(200).json({
       success: true,
-      imagem_url: imageUrl,
+      imagem_url: uploadResult.secure_url,
       message: "Imagem salva com sucesso!",
       produto: {
         id: produto._id,
         nome: produto.nome,
-        imagem_url: imageUrl,
+        imagem_url: uploadResult.secure_url,
       },
     });
   } catch (error) {
@@ -312,8 +307,8 @@ app.post("/api/upload-imagem", authMiddleware, async (req, res, next) => {
 app.listen(PORT, () => {
   console.log("🚀 GRAÇA PRESENTES - Servidor Node.js Iniciado!");
   console.log(`📍 URL: http://localhost:${PORT}`);
-  console.log("💾 Banco de dados: MongoDB");
-  console.log("🖼️  Upload de Imagens: Local (pasta /uploads)");
+  console.log("💾 Banco de dados: MongoDB (Mongoose)");
+  console.log("🖼️  Upload de Imagens: Cloudinary");
   console.log("⏹️ Para parar: Ctrl+C");
   console.log("=" * 60);
 });
@@ -323,21 +318,24 @@ app.delete("/api/produtos/:id", authMiddleware, async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    // Lógica para remover a imagem do disco antes de remover do DB
+    // Lógica para remover a imagem do Cloudinary antes de remover do DB
     const produto = await Produto.findById(id);
-    if (produto && produto.imagem_url) {
-      const imagePath = path.join(__dirname, produto.imagem_url);
-      if (fs.existsSync(imagePath)) {
-        fs.unlinkSync(imagePath);
+    if (produto && produto.cloudinary_public_id) {
+      try {
+        await cloudinary.uploader.destroy(produto.cloudinary_public_id);
+      } catch (cloudinaryError) {
+        // Loga o erro mas continua o processo de deleção do produto no DB
+        console.error("Erro ao deletar imagem no Cloudinary:", cloudinaryError);
       }
     }
 
     // Encontra e remove o produto pelo ID
-    const result = await Produto.findByIdAndDelete(id);
+    const produtoDeletado = await Produto.findByIdAndDelete(id);
 
-    if (result.deletedCount === 0) {
+    if (!produtoDeletado) {
       return res.status(404).json({ error: "Produto não encontrado." });
     }
+
     res
       .status(200)
       .json({ success: true, message: "Produto removido com sucesso." });
