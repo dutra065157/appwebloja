@@ -659,12 +659,8 @@
           lista.innerHTML = produtos
             .map((produto) => {
               const temImagem = !!produto.imagem_url;
-              // Ajuste: Construir a URL completa da imagem usando a API_BASE_URL
-              const imagemSrc = temImagem
-                ? API_BASE_URL
-                  ? `${API_BASE_URL}${produto.imagem_url}`
-                  : produto.imagem_url
-                : "";
+              // A URL da imagem do Cloudinary já é completa, então a usamos diretamente.
+              const imagemSrc = produto.imagem_url || "";
 
               return `
                     <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition group">

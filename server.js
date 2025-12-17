@@ -69,10 +69,11 @@ const authMiddleware = (req, res, next) => {
       .json({ error: "Acesso não autorizado. Token não fornecido." });
   }
 
-  // Para este projeto, o token é uma string simples. Em um projeto real, você usaria JWT.
-  // Vamos apenas verificar se o token corresponde ao esperado (pode ser qualquer string segura).
-  // O frontend usa 'admin_logged_in' como token.
-  if (token === "admin_logged_in") {
+  // O frontend gera um token com btoa(`admin:${Date.now()}`).
+  // O início do token codificado para "admin:" é "YWRtaW46".
+  // Verificamos se o token começa com esse prefixo para validá-lo.
+  // Esta é uma abordagem simples; JWT seria mais robusto para produção.
+  if (token.startsWith("YWRtaW46")) {
     next(); // Token válido, continue
   } else {
     return res.status(403).json({ error: "Token inválido." });
@@ -132,6 +133,7 @@ const Pedido = mongoose.model("Pedido", pedidoSchema);
 
 // Rota de Health Check
 app.get("/api/health", async (req, res, next) => {
+  // Renomeado de /api/status para /api/health
   try {
     // Verifica o status da conexão do Mongoose
     const isConnected = mongoose.connection.readyState === 1;
