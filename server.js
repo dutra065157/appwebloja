@@ -310,7 +310,7 @@ app.listen(PORT, () => {
   console.log("💾 Banco de dados: MongoDB (Mongoose)");
   console.log("🖼️  Upload de Imagens: Cloudinary");
   console.log("⏹️ Para parar: Ctrl+C");
-  console.log("=" * 60);
+  console.log("=".repeat(60));
 });
 
 // Rota para remover um produto
