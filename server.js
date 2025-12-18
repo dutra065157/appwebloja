@@ -287,8 +287,7 @@ app.post("/api/upload-imagem", authMiddleware, async (req, res, next) => {
     // 3. FAZER UPLOAD PARA O CLOUDINARY
     const uploadResult = await cloudinary.uploader.upload(imagem_base64, {
       folder: "graca-presentes", // Cria uma pasta no Cloudinary para organizar
-      public_id: `produto_${produto_id}`, // Usa o ID do produto como nome do arquivo
-      overwrite: true, // Sobrescreve se já existir uma imagem para este produto
+      overwrite: false, // Não é mais necessário, pois o ID será sempre único
     });
 
     // 4. ATUALIZAR O PRODUTO NO BANCO DE DADOS
