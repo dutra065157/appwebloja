@@ -24,15 +24,22 @@ app.use(express.json({ limit: "10mb" })); // Aumenta o limite para receber image
 app.use(express.static(__dirname)); // Serve arquivos estáticos (html, css, js) da pasta raiz
 
 // --- ☁️ Configuração do Cloudinary ---
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-console.log(
-  "☁️  Cloudinary configurado:",
-  process.env.CLOUDINARY_CLOUD_NAME ? "Sim" : "Não"
-);
+const { CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } =
+  process.env;
+
+if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_API_KEY || !CLOUDINARY_API_SECRET) {
+  console.error(
+    "❌ Erro: As variáveis de ambiente do Cloudinary (CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET) não foram definidas."
+  );
+  process.exit(1);
+} else {
+  cloudinary.config({
+    cloud_name: CLOUDINARY_CLOUD_NAME,
+    api_key: CLOUDINARY_API_KEY,
+    api_secret: CLOUDINARY_API_SECRET,
+  });
+  console.log("☁️  Cloudinary configurado com sucesso.");
+}
 
 // --- 몽 Conexão com o MongoDB usando Mongoose ---
 const MONGO_URI = process.env.MONGODB_URI;
