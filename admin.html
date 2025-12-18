@@ -547,16 +547,17 @@
                   : "/api/sign-upload",
                 { headers: { Authorization: `Bearer ${adminToken}` } }
               );
-              if (!signResponse.ok)
+              if (!signResponse.ok) {
                 if (signResponse.status === 401) {
                   mostrarFeedback(
                     "🔒 Sessão expirada. Redirecionando...",
                     "error"
                   );
                   setTimeout(() => fazerLogout(), 2000);
-                  return; // Interrompe a execução
+                  return;
                 }
-              throw new Error("Falha ao obter assinatura para upload.");
+                throw new Error("Falha ao obter assinatura para upload.");
+              }
               const signData = await signResponse.json();
 
               // 2.2. Montar formulário de upload para o Cloudinary
