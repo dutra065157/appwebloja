@@ -548,7 +548,15 @@
                 { headers: { Authorization: `Bearer ${adminToken}` } }
               );
               if (!signResponse.ok)
-                throw new Error("Falha ao obter assinatura para upload.");
+                if (signResponse.status === 401) {
+                  mostrarFeedback(
+                    "🔒 Sessão expirada. Redirecionando...",
+                    "error"
+                  );
+                  setTimeout(() => fazerLogout(), 2000);
+                  return; // Interrompe a execução
+                }
+              throw new Error("Falha ao obter assinatura para upload.");
               const signData = await signResponse.json();
 
               // 2.2. Montar formulário de upload para o Cloudinary
@@ -567,6 +575,17 @@
               });
 
               if (!cloudinaryResponse.ok) {
+                // O erro 401 do Cloudinary indica uma assinatura inválida.
+                if (cloudinaryResponse.status === 401) {
+                  const errorData = await cloudinaryResponse.json();
+                  console.error(
+                    "Erro de assinatura do Cloudinary:",
+                    errorData.error.message
+                  );
+                  throw new Error(
+                    "Assinatura de upload inválida. Tente novamente."
+                  );
+                }
                 throw new Error(
                   "Produto salvo, mas falha ao enviar imagem para o Cloudinary."
                 );
@@ -588,6 +607,15 @@
                   imagem_url: cloudinaryResult.secure_url,
                   cloudinary_public_id: cloudinaryResult.public_id,
                 }),
+              }).then((res) => {
+                if (res.status === 401) {
+                  mostrarFeedback(
+                    "🔒 Sessão expirada. Redirecionando...",
+                    "error"
+                  );
+                  setTimeout(() => fazerLogout(), 2000);
+                  return;
+                }
               });
             }
 
