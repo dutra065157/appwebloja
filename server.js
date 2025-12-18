@@ -275,10 +275,7 @@ app.get("/api/sign-upload", authMiddleware, (req, res, next) => {
 
   try {
     const signature = cloudinary.utils.api_sign_request(
-      {
-        timestamp: timestamp,
-        folder: folder,
-      },
+      { timestamp, folder },
       CLOUDINARY_API_SECRET
     );
 
