@@ -71,6 +71,9 @@ const authMiddleware = (req, res, next) => {
   const token = authHeader && authHeader.split(" ")[1];
 
   if (token == null) {
+    console.warn(
+      `⚠️  Acesso negado (401): Token não fornecido para ${req.method} ${req.path}`
+    );
     return res
       .status(401)
       .json({ error: "Acesso não autorizado. Token não fornecido." });
@@ -83,6 +86,9 @@ const authMiddleware = (req, res, next) => {
   if (token.startsWith("YWRtaW46")) {
     next(); // Token válido, continue
   } else {
+    console.warn(
+      `⚠️  Acesso negado (403): Token inválido para ${req.method} ${req.path}`
+    );
     return res.status(403).json({ error: "Token inválido." });
   }
 };
