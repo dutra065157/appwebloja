@@ -537,12 +537,47 @@
             const result = await response.json();
             const produtoId = result.produto_id;
 
-            // 2. Se houver imagem, enviar para a API de upload
-            if (imagemBase64) {
-              const uploadUrl = API_BASE_URL
+            // 2. Se houver imagem, fazer upload direto para o Cloudinary
+            const imagemFile = document.getElementById("imagemInput").files[0];
+            if (imagemFile) {
+              // 2.1. Obter assinatura do backend
+              const signResponse = await fetch(
+                API_BASE_URL
+                  ? `${API_BASE_URL}/api/sign-upload`
+                  : "/api/sign-upload",
+                { headers: { Authorization: `Bearer ${adminToken}` } }
+              );
+              if (!signResponse.ok)
+                throw new Error("Falha ao obter assinatura para upload.");
+              const signData = await signResponse.json();
+
+              // 2.2. Montar formulário de upload para o Cloudinary
+              const uploadFormData = new FormData();
+              uploadFormData.append("file", imagemFile);
+              uploadFormData.append("api_key", signData.api_key);
+              uploadFormData.append("timestamp", signData.timestamp);
+              uploadFormData.append("signature", signData.signature);
+              uploadFormData.append("folder", signData.folder);
+
+              // 2.3. Enviar para a API do Cloudinary
+              const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+              const cloudinaryResponse = await fetch(cloudinaryUrl, {
+                method: "POST",
+                body: uploadFormData,
+              });
+
+              if (!cloudinaryResponse.ok) {
+                throw new Error(
+                  "Produto salvo, mas falha ao enviar imagem para o Cloudinary."
+                );
+              }
+              const cloudinaryResult = await cloudinaryResponse.json();
+
+              // 2.4. Enviar URL da imagem para o nosso backend para salvar no produto
+              const updateImageUrl = API_BASE_URL
                 ? `${API_BASE_URL}/api/upload-imagem`
                 : "/api/upload-imagem";
-              const uploadResponse = await fetch(uploadUrl, {
+              await fetch(updateImageUrl, {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
@@ -550,14 +585,10 @@
                 },
                 body: JSON.stringify({
                   produto_id: produtoId,
-                  imagem_base64: imagemBase64,
+                  imagem_url: cloudinaryResult.secure_url,
+                  cloudinary_public_id: cloudinaryResult.public_id,
                 }),
               });
-              if (!uploadResponse.ok) {
-                throw new Error(
-                  "Produto cadastrado, mas falha ao enviar imagem."
-                );
-              }
             }
 
             mostrarFeedback("✅ Produto cadastrado com sucesso!", "success");

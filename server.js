@@ -265,15 +265,15 @@ app.post("/api/pedidos", async (req, res, next) => {
 // Rota para upload de imagem
 app.post("/api/upload-imagem", authMiddleware, async (req, res, next) => {
   try {
-    const { imagem_base64, produto_id } = req.body;
+    const { produto_id, imagem_url, cloudinary_public_id } = req.body;
 
-    if (!imagem_base64 || !produto_id) {
+    if (!produto_id || !imagem_url || !cloudinary_public_id) {
       return res
         .status(400)
-        .json({ error: "Imagem e ID do produto são obrigatórios." });
+        .json({ error: "ID do produto e dados da imagem são obrigatórios." });
     }
 
-    // 1. VALIDAR O ID DO PRODUTO
+    // 1. VALIDAR O ID DO PRODUTO (ainda importante)
     if (!mongoose.Types.ObjectId.isValid(produto_id)) {
       return res.status(400).json({ error: "ID do produto inválido." });
     }
@@ -284,25 +284,17 @@ app.post("/api/upload-imagem", authMiddleware, async (req, res, next) => {
       return res.status(404).json({ error: "Produto não encontrado." });
     }
 
-    // 3. FAZER UPLOAD PARA O CLOUDINARY
-    const uploadResult = await cloudinary.uploader.upload(imagem_base64, {
-      folder: "graca-presentes", // Cria uma pasta no Cloudinary para organizar
-      overwrite: false, // Não é mais necessário, pois o ID será sempre único
-    });
-
-    // 4. ATUALIZAR O PRODUTO NO BANCO DE DADOS
-    produto.imagem_url = uploadResult.secure_url; // URL segura da imagem no Cloudinary
-    produto.cloudinary_public_id = uploadResult.public_id; // ID para futura deleção
+    // 3. ATUALIZAR O PRODUTO NO BANCO DE DADOS COM OS DADOS DO CLOUDINARY
+    produto.imagem_url = imagem_url;
+    produto.cloudinary_public_id = cloudinary_public_id;
     await produto.save();
 
     res.status(200).json({
       success: true,
-      imagem_url: uploadResult.secure_url,
-      message: "Imagem salva com sucesso!",
+      message: "URL da imagem salva com sucesso!",
       produto: {
         id: produto._id,
-        nome: produto.nome,
-        imagem_url: uploadResult.secure_url,
+        imagem_url: produto.imagem_url,
       },
     });
   } catch (error) {
