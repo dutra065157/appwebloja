@@ -262,6 +262,32 @@ app.post("/api/pedidos", async (req, res, next) => {
   }
 });
 
+// Rota para gerar assinatura de upload do Cloudinary
+app.get("/api/sign-upload", authMiddleware, (req, res, next) => {
+  const timestamp = Math.round(new Date().getTime() / 1000);
+  const folder = "graca-presentes";
+
+  try {
+    const signature = cloudinary.utils.api_sign_request(
+      {
+        timestamp: timestamp,
+        folder: folder,
+      },
+      CLOUDINARY_API_SECRET
+    );
+
+    res.status(200).json({
+      timestamp,
+      signature,
+      folder,
+      api_key: CLOUDINARY_API_KEY,
+    });
+  } catch (error) {
+    // Passa o erro para o middleware de tratamento de erros
+    next(error);
+  }
+});
+
 // Rota para upload de imagem
 app.post("/api/upload-imagem", authMiddleware, async (req, res, next) => {
   try {
