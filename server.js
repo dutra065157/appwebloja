@@ -268,63 +268,157 @@ app.post("/api/pedidos", async (req, res, next) => {
   }
 });
 
-// Rota para gerar assinatura de upload do Cloudinary
+// 🔐 Rota para gerar assinatura SEGURA para upload direto
 app.get("/api/sign-upload", authMiddleware, (req, res, next) => {
-  const timestamp = Math.round(new Date().getTime() / 1000);
-  const folder = "graca-presentes";
-
   try {
+    const timestamp = Math.round(Date.now() / 1000);
+    const produtoId = req.query.produto_id || "temp";
+
+    // ⚠️ Parâmetros para assinatura (Simplificado para corrigir erro)
+    const params = {
+      timestamp: timestamp,
+      folder: `graca-presentes/produtos/${produtoId}`,
+      public_id: `produto_${produtoId}_${timestamp}`,
+    };
+
+    // Gerar assinatura com sua API_SECRET
     const signature = cloudinary.utils.api_sign_request(
-      { timestamp, folder },
-      CLOUDINARY_API_SECRET
+      params,
+      process.env.CLOUDINARY_API_SECRET
     );
 
-    res.status(200).json({
-      timestamp,
-      signature,
-      folder,
-      api_key: CLOUDINARY_API_KEY,
+    res.json({
+      success: true,
+      signature: signature,
+      timestamp: timestamp,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      folder: params.folder,
+      public_id: params.public_id, // Importante: Enviar o public_id gerado para o frontend
     });
   } catch (error) {
-    // Passa o erro para o middleware de tratamento de erros
     next(error);
   }
 });
 
-// Rota para upload de imagem
-app.post("/api/upload-imagem", authMiddleware, async (req, res, next) => {
+// 📸 Rota para salvar URL da imagem APÓS upload no Cloudinary
+app.post("/api/produtos/:id/imagem", authMiddleware, async (req, res, next) => {
   try {
-    const { produto_id, imagem_url, cloudinary_public_id } = req.body;
+    const produtoId = req.params.id;
+    const { imagem_url, cloudinary_public_id, width, height } = req.body;
 
-    if (!produto_id || !imagem_url || !cloudinary_public_id) {
-      return res
-        .status(400)
-        .json({ error: "ID do produto e dados da imagem são obrigatórios." });
+    // 🔒 VALIDAÇÃO DE SEGURANÇA CRÍTICA
+    if (!imagem_url || !cloudinary_public_id) {
+      return res.status(400).json({
+        error: "URL da imagem e public_id são obrigatórios.",
+      });
     }
 
-    // 1. VALIDAR O ID DO PRODUTO (ainda importante)
-    if (!mongoose.Types.ObjectId.isValid(produto_id)) {
-      return res.status(400).json({ error: "ID do produto inválido." });
+    // Verifica se a URL é DO SEU Cloudinary
+    const seuDominioCloudinary = `${process.env.CLOUDINARY_CLOUD_NAME}.`;
+    if (
+      !imagem_url.includes(
+        `res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/`
+      )
+    ) {
+      return res.status(400).json({
+        error: "URL de imagem inválida. Deve ser do seu domínio Cloudinary.",
+      });
     }
 
-    // 2. VERIFICAR SE O PRODUTO EXISTE
-    const produto = await Produto.findById(produto_id);
+    // Verifica formato permitido
+    const formato = imagem_url.split(".").pop().split("?")[0];
+    const formatosPermitidos = ["jpg", "jpeg", "png", "webp"];
+    if (!formatosPermitidos.includes(formato.toLowerCase())) {
+      return res.status(400).json({
+        error: "Formato de imagem não permitido.",
+      });
+    }
+
+    // Busca produto
+    const produto = await Produto.findById(produtoId);
     if (!produto) {
       return res.status(404).json({ error: "Produto não encontrado." });
     }
 
-    // 3. ATUALIZAR O PRODUTO NO BANCO DE DADOS COM OS DADOS DO CLOUDINARY
+    // 🔄 Remove imagem ANTIGA do Cloudinary se existir
+    if (produto.cloudinary_public_id) {
+      try {
+        await cloudinary.uploader.destroy(produto.cloudinary_public_id);
+        console.log(
+          `🗑️  Imagem antiga removida: ${produto.cloudinary_public_id}`
+        );
+      } catch (deleteError) {
+        console.error("⚠️  Erro ao remover imagem antiga:", deleteError);
+        // Continua mesmo com erro na remoção
+      }
+    }
+
+    // Atualiza produto
     produto.imagem_url = imagem_url;
     produto.cloudinary_public_id = cloudinary_public_id;
+    produto.ultima_atualizacao = new Date();
     await produto.save();
 
-    res.status(200).json({
+    res.json({
       success: true,
-      message: "URL da imagem salva com sucesso!",
+      message: "Imagem do produto atualizada com sucesso!",
       produto: {
         id: produto._id,
+        nome: produto.nome,
         imagem_url: produto.imagem_url,
+        public_id: produto.cloudinary_public_id,
       },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// 🖼️ Rota para gerar URL otimizada (útil para frontend)
+app.get("/api/cloudinary/otimizar-url", (req, res) => {
+  const {
+    public_id,
+    width = 400,
+    height,
+    crop = "fill",
+    quality = "auto",
+  } = req.query;
+
+  if (!public_id) {
+    return res.status(400).json({ error: "public_id é obrigatório" });
+  }
+
+  const url = cloudinary.url(public_id, {
+    width: parseInt(width),
+    height: height ? parseInt(height) : null,
+    crop: crop,
+    quality: quality,
+    format: "auto", // WebP se suportado
+    secure: true,
+  });
+
+  res.json({ url });
+});
+
+// 📊 Rota para estatísticas (opcional)
+app.get("/api/cloudinary/estatisticas", authMiddleware, async (req, res) => {
+  try {
+    const result = await cloudinary.api.resources({
+      type: "upload",
+      prefix: "graca-presentes/",
+      max_results: 10,
+    });
+
+    res.json({
+      total_imagens: result.resources.length,
+      tamanho_total: result.resources.reduce((sum, img) => sum + img.bytes, 0),
+      ultimas_imagens: result.resources.map((img) => ({
+        public_id: img.public_id,
+        url: img.secure_url,
+        tamanho: img.bytes,
+        formato: img.format,
+      })),
     });
   } catch (error) {
     next(error);
