@@ -651,9 +651,9 @@
               // Reconstrói a URL completa se for um caminho relativo (upload local)
               let imagemSrc = produto.imagem_url || "";
               if (imagemSrc && imagemSrc.startsWith("/")) {
-                imagemSrc =
-                  (typeof API_BASE_URL !== "undefined" ? API_BASE_URL : "") +
-                  imagemSrc;
+                const baseUrl =
+                  typeof API_BASE_URL !== "undefined" ? API_BASE_URL : "";
+                imagemSrc = `${baseUrl}${imagemSrc}`;
               }
 
               return `
