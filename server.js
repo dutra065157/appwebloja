@@ -3,7 +3,7 @@ const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
 const mongoose = require("mongoose");
-const cloudinary = require("cloudinary").v2;
+const multer = require("multer");
 require("dotenv").config(); // Garante que as variáveis de ambiente sejam carregadas
 
 // Configuração
@@ -23,25 +23,30 @@ app.use(express.json({ limit: "10mb" })); // Aumenta o limite para receber image
 
 app.use(express.static(__dirname)); // Serve arquivos estáticos (html, css, js) da pasta raiz
 
-// --- ☁️ Configuração do Cloudinary ---
-const { CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } =
-  process.env;
-
-if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_API_KEY || !CLOUDINARY_API_SECRET) {
-  console.error(
-    "❌ Erro: As variáveis de ambiente do Cloudinary (CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET) não foram definidas."
-  );
-  process.exit(1);
-} else {
-  cloudinary.config({
-    cloud_name: CLOUDINARY_CLOUD_NAME,
-    api_key: CLOUDINARY_API_KEY,
-    api_secret: CLOUDINARY_API_SECRET,
-  });
-  console.log("☁️  Cloudinary configurado com sucesso.");
+// --- 📂 Configuração de Upload Local (Multer) ---
+const uploadDir = path.join(__dirname, "images");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// --- 몽 Conexão com o MongoDB usando Mongoose ---
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    // Gera um nome único: timestamp-random.extensão
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname);
+    cb(null, "produto-" + uniqueSuffix + ext);
+  },
+});
+
+const upload = multer({ storage: storage });
+
+// Servir a pasta de imagens publicamente
+app.use("/images", express.static(uploadDir));
+
+// --- 🍃 Conexão com o MongoDB usando Mongoose ---
 const MONGO_URI = process.env.MONGODB_URI;
 if (!MONGO_URI) {
   console.error(
@@ -60,9 +65,33 @@ mongoose
 
 // Middleware de tratamento de erros
 const errorHandler = (err, req, res, next) => {
-  console.error(`❌ Erro Inesperado: ${err.message}`);
-  console.error(err.stack);
-  res.status(500).json({ error: "Ocorreu um erro inesperado no servidor." });
+  console.error("❌ Erro no Servidor:");
+  console.error(err); // Loga o erro completo para debug
+
+  // Retornar erro de validação do Mongoose como 400 com detalhes
+  if (err.name === "ValidationError") {
+    return res.status(400).json({
+      error: Object.values(err.errors)
+        .map((e) => e.message)
+        .join(", "),
+    });
+  }
+
+  // Erro de conversão de tipos (ex: número inválido)
+  if (err.name === "CastError") {
+    return res
+      .status(400)
+      .json({ error: `Dado inválido no campo ${err.path}` });
+  }
+
+  // Erros do Multer (ex: arquivo muito grande)
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({ error: `Erro no upload: ${err.message}` });
+  }
+
+  res
+    .status(500)
+    .json({ error: err.message || "Ocorreu um erro inesperado no servidor." });
 };
 
 // Middleware de autenticação para rotas de admin
@@ -103,7 +132,6 @@ const produtoSchema = new mongoose.Schema({
   categoria: { type: String, required: true },
   descricao: String,
   imagem_url: String,
-  cloudinary_public_id: String, // ID da imagem no Cloudinary para podermos deletá-la
   icone: String,
   cor: String,
   cor_gradiente: String,
@@ -160,7 +188,6 @@ app.get("/api/health", async (req, res, next) => {
       features: {
         whatsapp_integration: true,
         database: "MongoDB",
-        products_count: products_count,
       },
     });
   } catch (error) {
@@ -180,40 +207,65 @@ app.get("/api/produtos", async (req, res, next) => {
 });
 
 // Rota para cadastrar um novo produto
-app.post("/api/produtos", authMiddleware, async (req, res, next) => {
-  try {
-    const p = req.body;
+app.post(
+  "/api/produtos",
+  authMiddleware,
+  upload.single("imagem"),
+  async (req, res, next) => {
+    try {
+      const p = req.body;
+      console.log("📝 Dados recebidos (body):", p); // Log para debug
 
-    // Lógica para definir ícone e gradiente com base na categoria
-    const categoryStyles = getCategoryStyles(p.categoria);
+      // Lógica para definir ícone e gradiente com base na categoria
+      const categoryStyles = getCategoryStyles(p.categoria);
 
-    const newProduct = {
-      nome: p.nome,
-      preco: p.preco,
-      preco_original: p.preco_original,
-      categoria: p.categoria,
-      descricao: p.descricao,
-      imagem_url: null, // A imagem será adicionada depois
-      icone: categoryStyles.icone,
-      cor: categoryStyles.cor,
-      cor_gradiente: categoryStyles.cor_gradiente,
-      desconto: p.desconto || 0,
-      novo: p.novo || false,
-      mais_vendido: p.mais_vendido || false,
-      // createdAt é definido por padrão pelo Schema
-    };
+      // Se houver arquivo, cria a URL relativa
+      let imagemUrl = null;
+      if (req.file) {
+        imagemUrl = `/images/${req.file.filename}`;
+      }
 
-    const produtoCriado = await new Produto(newProduct).save();
+      // Helpers para converter números (trata vírgula e ponto e evita NaN)
+      const parseNum = (v) => {
+        if (!v) return 0;
+        const num = parseFloat(String(v).replace(",", "."));
+        return isNaN(num) ? 0 : num;
+      };
 
-    res.status(200).json({
-      success: true,
-      produto_id: produtoCriado._id,
-      message: "Produto cadastrado com sucesso",
-    });
-  } catch (error) {
-    next(error);
+      const parseNumOpt = (v) => {
+        if (!v) return undefined;
+        const num = parseFloat(String(v).replace(",", "."));
+        return isNaN(num) ? undefined : num;
+      };
+
+      const newProduct = {
+        nome: p.nome,
+        preco: parseNum(p.preco),
+        preco_original: parseNumOpt(p.preco_original),
+        categoria: p.categoria,
+        descricao: p.descricao,
+        imagem_url: imagemUrl,
+        icone: categoryStyles.icone,
+        cor: categoryStyles.cor,
+        cor_gradiente: categoryStyles.cor_gradiente,
+        desconto: parseNum(p.desconto),
+        novo: p.novo === "true" || p.novo === true,
+        mais_vendido: p.mais_vendido === "true" || p.mais_vendido === true,
+        // createdAt é definido por padrão pelo Schema
+      };
+
+      const produtoCriado = await new Produto(newProduct).save();
+
+      res.status(201).json({
+        success: true,
+        produto_id: produtoCriado._id,
+        message: "Produto cadastrado com sucesso",
+      });
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 // Rota para buscar todos os pedidos
 app.get("/api/pedidos", async (req, res, next) => {
@@ -268,170 +320,13 @@ app.post("/api/pedidos", async (req, res, next) => {
   }
 });
 
-// 🔐 Rota para gerar assinatura SEGURA para upload direto
-app.get("/api/sign-upload", authMiddleware, (req, res, next) => {
-  try {
-    const timestamp = Math.round(Date.now() / 1000);
-    const produtoId = req.query.produto_id || "temp";
-
-    // ⚠️ Parâmetros para assinatura (Simplificado para corrigir erro)
-    const params = {
-      timestamp: timestamp,
-      folder: `graca-presentes/produtos/${produtoId}`,
-      public_id: `produto_${produtoId}_${timestamp}`,
-    };
-
-    // Gerar assinatura com sua API_SECRET
-    const signature = cloudinary.utils.api_sign_request(
-      params,
-      process.env.CLOUDINARY_API_SECRET
-    );
-
-    res.json({
-      success: true,
-      signature: signature,
-      timestamp: timestamp,
-      api_key: process.env.CLOUDINARY_API_KEY,
-      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-      folder: params.folder,
-      public_id: params.public_id, // Importante: Enviar o public_id gerado para o frontend
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
-// 📸 Rota para salvar URL da imagem APÓS upload no Cloudinary
-app.post("/api/produtos/:id/imagem", authMiddleware, async (req, res, next) => {
-  try {
-    const produtoId = req.params.id;
-    const { imagem_url, cloudinary_public_id, width, height } = req.body;
-
-    // 🔒 VALIDAÇÃO DE SEGURANÇA CRÍTICA
-    if (!imagem_url || !cloudinary_public_id) {
-      return res.status(400).json({
-        error: "URL da imagem e public_id são obrigatórios.",
-      });
-    }
-
-    // Verifica se a URL é DO SEU Cloudinary
-    const seuDominioCloudinary = `${process.env.CLOUDINARY_CLOUD_NAME}.`;
-    if (
-      !imagem_url.includes(
-        `res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/`
-      )
-    ) {
-      return res.status(400).json({
-        error: "URL de imagem inválida. Deve ser do seu domínio Cloudinary.",
-      });
-    }
-
-    // Verifica formato permitido
-    const formato = imagem_url.split(".").pop().split("?")[0];
-    const formatosPermitidos = ["jpg", "jpeg", "png", "webp"];
-    if (!formatosPermitidos.includes(formato.toLowerCase())) {
-      return res.status(400).json({
-        error: "Formato de imagem não permitido.",
-      });
-    }
-
-    // Busca produto
-    const produto = await Produto.findById(produtoId);
-    if (!produto) {
-      return res.status(404).json({ error: "Produto não encontrado." });
-    }
-
-    // 🔄 Remove imagem ANTIGA do Cloudinary se existir
-    if (produto.cloudinary_public_id) {
-      try {
-        await cloudinary.uploader.destroy(produto.cloudinary_public_id);
-        console.log(
-          `🗑️  Imagem antiga removida: ${produto.cloudinary_public_id}`
-        );
-      } catch (deleteError) {
-        console.error("⚠️  Erro ao remover imagem antiga:", deleteError);
-        // Continua mesmo com erro na remoção
-      }
-    }
-
-    // Atualiza produto
-    produto.imagem_url = imagem_url;
-    produto.cloudinary_public_id = cloudinary_public_id;
-    produto.ultima_atualizacao = new Date();
-    await produto.save();
-
-    res.json({
-      success: true,
-      message: "Imagem do produto atualizada com sucesso!",
-      produto: {
-        id: produto._id,
-        nome: produto.nome,
-        imagem_url: produto.imagem_url,
-        public_id: produto.cloudinary_public_id,
-      },
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
-// 🖼️ Rota para gerar URL otimizada (útil para frontend)
-app.get("/api/cloudinary/otimizar-url", (req, res) => {
-  const {
-    public_id,
-    width = 400,
-    height,
-    crop = "fill",
-    quality = "auto",
-  } = req.query;
-
-  if (!public_id) {
-    return res.status(400).json({ error: "public_id é obrigatório" });
-  }
-
-  const url = cloudinary.url(public_id, {
-    width: parseInt(width),
-    height: height ? parseInt(height) : null,
-    crop: crop,
-    quality: quality,
-    format: "auto", // WebP se suportado
-    secure: true,
-  });
-
-  res.json({ url });
-});
-
-// 📊 Rota para estatísticas (opcional)
-app.get("/api/cloudinary/estatisticas", authMiddleware, async (req, res) => {
-  try {
-    const result = await cloudinary.api.resources({
-      type: "upload",
-      prefix: "graca-presentes/",
-      max_results: 10,
-    });
-
-    res.json({
-      total_imagens: result.resources.length,
-      tamanho_total: result.resources.reduce((sum, img) => sum + img.bytes, 0),
-      ultimas_imagens: result.resources.map((img) => ({
-        public_id: img.public_id,
-        url: img.secure_url,
-        tamanho: img.bytes,
-        formato: img.format,
-      })),
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
 // --- INICIALIZAÇÃO DO SERVIDOR ---
 
 app.listen(PORT, () => {
   console.log("🚀 GRAÇA PRESENTES - Servidor Node.js Iniciado!");
   console.log(`📍 URL: http://localhost:${PORT}`);
   console.log("💾 Banco de dados: MongoDB (Mongoose)");
-  console.log("🖼️  Upload de Imagens: Cloudinary");
+  console.log("🖼️  Upload de Imagens: Local (/images)");
   console.log("⏹️ Para parar: Ctrl+C");
   console.log("=".repeat(60));
 });
@@ -441,14 +336,18 @@ app.delete("/api/produtos/:id", authMiddleware, async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    // Lógica para remover a imagem do Cloudinary antes de remover do DB
+    // Lógica para remover a imagem local antes de remover do DB
     const produto = await Produto.findById(id);
-    if (produto && produto.cloudinary_public_id) {
+    if (produto && produto.imagem_url) {
       try {
-        await cloudinary.uploader.destroy(produto.cloudinary_public_id);
-      } catch (cloudinaryError) {
+        // Remove a barra inicial se existir para o caminho do sistema de arquivos
+        const imagePath = path.join(__dirname, produto.imagem_url);
+        if (fs.existsSync(imagePath)) {
+          fs.unlinkSync(imagePath);
+        }
+      } catch (fsError) {
         // Loga o erro mas continua o processo de deleção do produto no DB
-        console.error("Erro ao deletar imagem no Cloudinary:", cloudinaryError);
+        console.error("Erro ao deletar imagem local:", fsError);
       }
     }
 

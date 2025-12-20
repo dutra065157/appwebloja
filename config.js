@@ -1,5 +1,4 @@
 // --- CONFIGURAÇÃO GLOBAL DA API ---
 // Este é o ÚNICO lugar onde você precisa definir a URL do seu backend.
 // Para produção, altere para a URL fornecida pelo Render (ex: 'https://seu-app.onrender.com').
-const API_BASE_URL = "https://appwebloja-api.onrender.com"; // Deixe em branco para desenvolvimento local
-const CLOUDINARY_CLOUD_NAME = "dgeyguiob"; // <-- ADICIONE SEU CLOUD NAME AQUI
+const API_BASE_URL = ""; // Deixe em branco para desenvolvimento local

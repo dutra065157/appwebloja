@@ -818,34 +818,46 @@
           button.innerHTML = "⏳ Cadastrando...";
           button.disabled = true;
 
-          const formData = new FormData(this);
-          const produtoData = {
-            nome: formData.get("nome"),
-            preco: parseFloat(formData.get("preco")),
-            preco_original: formData.get("precoOriginal")
-              ? parseFloat(formData.get("precoOriginal"))
-              : null,
-            categoria: formData.get("categoria"),
-            descricao: formData.get("descricao"),
-            desconto: parseInt(formData.get("desconto") || 0),
-            novo: document.getElementById("novo").checked,
-            mais_vendido: document.getElementById("maisVendido").checked,
-          };
+          // Preparar FormData para envio (suporta arquivos e campos de texto)
+          const formData = new FormData();
+          const form = e.target;
+
+          // Adicionar campos de texto
+          formData.append("nome", form.nome.value);
+          formData.append("categoria", form.categoria.value);
+          formData.append("preco", form.preco.value);
+          if (form.precoOriginal.value)
+            formData.append("preco_original", form.precoOriginal.value);
+          formData.append("desconto", form.desconto.value || 0);
+          formData.append("descricao", form.descricao.value);
+
+          // Adicionar booleanos
+          formData.append("novo", document.getElementById("novo").checked);
+          formData.append(
+            "mais_vendido",
+            document.getElementById("maisVendido").checked
+          );
+
+          // Adicionar imagem se existir
+          const imagemFile = document.getElementById("imagemInput").files[0];
+          if (imagemFile) {
+            formData.append("imagem", imagemFile);
+          }
 
           try {
             // Usar a mesma URL da API que o index.html usa
-            const url = API_BASE_URL
-              ? `${API_BASE_URL}/api/produtos`
-              : "/api/produtos";
+            const baseUrl =
+              typeof API_BASE_URL !== "undefined" ? API_BASE_URL : "";
+            const url = `${baseUrl}/api/produtos`;
 
-            // 1. Enviar dados do produto para a API
+            // Enviar dados do produto para a API
             const response = await fetch(url, {
               method: "POST",
               headers: {
-                "Content-Type": "application/json",
+                // Não definir Content-Type, o browser define multipart/form-data com boundary automaticamente
                 Authorization: `Bearer ${adminToken}`,
               },
-              body: JSON.stringify(produtoData),
+              body: formData,
             });
 
             if (!response.ok) {
@@ -864,92 +876,6 @@
 
             const result = await response.json();
             const produtoId = result.produto_id;
-
-            // 2. Se houver imagem, fazer upload direto para o Cloudinary
-            const imagemFile = document.getElementById("imagemInput").files[0];
-            if (imagemFile) {
-              // 2.1. Obter assinatura do backend
-              const signResponse = await fetch(
-                API_BASE_URL
-                  ? `${API_BASE_URL}/api/sign-upload`
-                  : "/api/sign-upload",
-                { headers: { Authorization: `Bearer ${adminToken}` } }
-              );
-              if (!signResponse.ok) {
-                if (signResponse.status === 401) {
-                  mostrarFeedback(
-                    "🔒 Sessão expirada. Redirecionando...",
-                    "error"
-                  );
-                  setTimeout(() => fazerLogout(), 2000);
-                  return;
-                }
-                throw new Error("Falha ao obter assinatura para upload.");
-              }
-              const signData = await signResponse.json();
-
-              // 2.2. Montar formulário de upload para o Cloudinary
-              const uploadFormData = new FormData();
-              uploadFormData.append("file", imagemFile);
-              uploadFormData.append("api_key", signData.api_key);
-              uploadFormData.append("timestamp", signData.timestamp);
-              uploadFormData.append("signature", signData.signature);
-              uploadFormData.append("folder", signData.folder);
-              if (signData.public_id) {
-                uploadFormData.append("public_id", signData.public_id);
-              }
-
-              // 2.3. Enviar para a API do Cloudinary
-              const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
-              const cloudinaryResponse = await fetch(cloudinaryUrl, {
-                method: "POST",
-                body: uploadFormData,
-              });
-
-              if (!cloudinaryResponse.ok) {
-                // O erro 401 do Cloudinary indica uma assinatura inválida.
-                if (cloudinaryResponse.status === 401) {
-                  const errorData = await cloudinaryResponse.json();
-                  console.error(
-                    "Erro de assinatura do Cloudinary:",
-                    errorData.error.message
-                  );
-                  throw new Error(
-                    "Assinatura de upload inválida. Tente novamente."
-                  );
-                }
-                throw new Error(
-                  "Produto salvo, mas falha ao enviar imagem para o Cloudinary."
-                );
-              }
-              const cloudinaryResult = await cloudinaryResponse.json();
-
-              // 2.4. Enviar URL da imagem para o nosso backend para salvar no produto
-              const updateImageUrl = API_BASE_URL
-                ? `${API_BASE_URL}/api/upload-imagem`
-                : "/api/upload-imagem";
-              await fetch(updateImageUrl, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${adminToken}`,
-                },
-                body: JSON.stringify({
-                  produto_id: produtoId,
-                  imagem_url: cloudinaryResult.secure_url,
-                  cloudinary_public_id: cloudinaryResult.public_id,
-                }),
-              }).then((res) => {
-                if (res.status === 401) {
-                  mostrarFeedback(
-                    "🔒 Sessão expirada. Redirecionando...",
-                    "error"
-                  );
-                  setTimeout(() => fazerLogout(), 2000);
-                  return;
-                }
-              });
-            }
 
             mostrarFeedback("✅ Produto cadastrado com sucesso!", "success");
             this.reset();
@@ -1050,8 +976,13 @@
           lista.innerHTML = produtos
             .map((produto) => {
               const temImagem = !!produto.imagem_url;
-              // A URL da imagem do Cloudinary já é completa, então a usamos diretamente.
-              const imagemSrc = produto.imagem_url || "";
+              // Reconstrói a URL completa se for um caminho relativo (upload local)
+              let imagemSrc = produto.imagem_url || "";
+              if (imagemSrc && imagemSrc.startsWith("/")) {
+                imagemSrc =
+                  (typeof API_BASE_URL !== "undefined" ? API_BASE_URL : "") +
+                  imagemSrc;
+              }
 
               return `
                     <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition group">
