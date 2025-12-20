@@ -7,7 +7,7 @@
     <script src="config.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-    <link rel="stylesheet" href="/style/style.css" />
+    <link rel="stylesheet" href="style/style.css" />
   </head>
   <body class="bg-gray-100 min-h-screen">
     <!-- Modal para Upload de Imagem -->
@@ -950,9 +950,9 @@
         const lista = document.getElementById("listaProdutos");
         try {
           // Usar a mesma URL da API que o index.html usa
-          const url = API_BASE_URL
-            ? `${API_BASE_URL}/api/produtos`
-            : "/api/produtos";
+          const baseUrl =
+            typeof API_BASE_URL !== "undefined" ? API_BASE_URL : "";
+          const url = baseUrl ? `${baseUrl}/api/produtos` : "/api/produtos";
           const response = await fetch(url);
           if (!response.ok) throw new Error("Falha ao buscar produtos");
 
@@ -1076,8 +1076,10 @@
       async function removerProduto(id) {
         if (confirm("Tem certeza que deseja remover este produto?")) {
           try {
-            const url = API_BASE_URL
-              ? `${API_BASE_URL}/api/produtos/${id}`
+            const baseUrl =
+              typeof API_BASE_URL !== "undefined" ? API_BASE_URL : "";
+            const url = baseUrl
+              ? `${baseUrl}/api/produtos/${id}`
               : `/api/produtos/${id}`;
             const response = await fetch(url, {
               method: "DELETE",
@@ -1115,9 +1117,9 @@
 
       async function exportarProdutos() {
         try {
-          const url = API_BASE_URL
-            ? `${API_BASE_URL}/api/produtos`
-            : "/api/produtos";
+          const baseUrl =
+            typeof API_BASE_URL !== "undefined" ? API_BASE_URL : "";
+          const url = baseUrl ? `${baseUrl}/api/produtos` : "/api/produtos";
           const response = await fetch(url);
           if (!response.ok)
             throw new Error("Falha ao buscar produtos para exportação");
