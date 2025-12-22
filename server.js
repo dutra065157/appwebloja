@@ -367,8 +367,9 @@ app.use(errorHandler);
 // --- INICIALIZAÇÃO DO SERVIDOR ---
 
 app.listen(PORT, () => {
+  const baseUrl = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
   console.log("🚀 GRAÇA PRESENTES - Servidor Node.js Iniciado!");
-  console.log(`📍 URL: http://localhost:${PORT}`);
+  console.log(`📍 URL: ${baseUrl}`);
   console.log("💾 Banco de dados: MongoDB (Mongoose)");
   console.log("🖼️  Upload de Imagens: Local (/images)");
   console.log("⏹️ Para parar: Ctrl+C");
