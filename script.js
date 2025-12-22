@@ -86,6 +86,10 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function inicializar() {
+  console.log(
+    "🔌 Conectando à API em:",
+    API_BASE_URL || "Mesmo domínio (Produção)"
+  );
   carregarProdutos();
   inicializarMobileMenu();
   inicializarFiltros();

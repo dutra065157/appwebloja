@@ -320,17 +320,6 @@ app.post("/api/pedidos", async (req, res, next) => {
   }
 });
 
-// --- INICIALIZAÇÃO DO SERVIDOR ---
-
-app.listen(PORT, () => {
-  console.log("🚀 GRAÇA PRESENTES - Servidor Node.js Iniciado!");
-  console.log(`📍 URL: http://localhost:${PORT}`);
-  console.log("💾 Banco de dados: MongoDB (Mongoose)");
-  console.log("🖼️  Upload de Imagens: Local (/images)");
-  console.log("⏹️ Para parar: Ctrl+C");
-  console.log("=".repeat(60));
-});
-
 // Rota para remover um produto
 app.delete("/api/produtos/:id", authMiddleware, async (req, res, next) => {
   try {
@@ -374,6 +363,17 @@ app.get("*", (req, res) => {
 
 // Adiciona o middleware de tratamento de erros no final, depois de todas as rotas
 app.use(errorHandler);
+
+// --- INICIALIZAÇÃO DO SERVIDOR ---
+
+app.listen(PORT, () => {
+  console.log("🚀 GRAÇA PRESENTES - Servidor Node.js Iniciado!");
+  console.log(`📍 URL: http://localhost:${PORT}`);
+  console.log("💾 Banco de dados: MongoDB (Mongoose)");
+  console.log("🖼️  Upload de Imagens: Local (/images)");
+  console.log("⏹️ Para parar: Ctrl+C");
+  console.log("=".repeat(60));
+});
 
 // Função auxiliar para estilos de categoria
 function getCategoryStyles(categoria) {

@@ -118,6 +118,10 @@ function setupLoginButtons() {
 }
 
 function inicializar() {
+  console.log(
+    "🔌 Conectando à API em:",
+    API_BASE_URL || "Mesmo domínio (Produção)"
+  );
   carregarProdutosEmDestaque();
   inicializarMobileMenu();
   inicializarNewsletter();
