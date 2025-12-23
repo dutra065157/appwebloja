@@ -120,7 +120,7 @@ function setupLoginButtons() {
 function inicializar() {
   console.log(
     "🔌 Conectando à API em:",
-    API_BASE_URL || "Mesmo domínio (Produção)"
+    window.API_BASE_URL || "Mesmo domínio (Produção)"
   );
   carregarProdutosEmDestaque();
   inicializarMobileMenu();
@@ -254,7 +254,7 @@ async function carregarProdutosEmDestaque(forcarCache = false) {
 
   try {
     // Usar a URL base da API definida no config.js
-    const baseUrl = typeof API_BASE_URL !== "undefined" ? API_BASE_URL : "";
+    const baseUrl = window.API_BASE_URL || "";
     const url = baseUrl ? `${baseUrl}/api/produtos` : "/api/produtos";
 
     // Adicionar timestamp para evitar cache
@@ -355,10 +355,9 @@ function renderizarProdutosDestaque(produtos) {
           imagemSrc = produto.imagem_url;
         } else {
           // Senão, adiciona a URL base se ela existir
-          imagemSrc =
-            typeof API_BASE_URL !== "undefined" && API_BASE_URL
-              ? `${API_BASE_URL}${produto.imagem_url}`
-              : produto.imagem_url;
+          imagemSrc = window.API_BASE_URL
+            ? `${window.API_BASE_URL}${produto.imagem_url}`
+            : produto.imagem_url;
         }
       }
 

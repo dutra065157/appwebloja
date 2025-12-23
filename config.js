@@ -3,7 +3,7 @@
 // Para produção, altere para a URL fornecida pelo Render (ex: 'https://seu-app.onrender.com').
 // Se o frontend e backend estiverem no mesmo domínio (como no Render), você pode deixar vazio "".
 
-const API_BASE_URL =
+window.API_BASE_URL =
   window.location.hostname === "localhost" ||
   window.location.hostname === "127.0.0.1"
     ? "http://localhost:8000" // Desenvolvimento (Local)
