@@ -200,7 +200,20 @@ app.get("/api/health", async (req, res, next) => {
 app.get("/api/produtos", async (req, res, next) => {
   try {
     const produtos = await Produto.find().sort({ createdAt: -1 });
-    res.status(200).json(produtos);
+
+    // Determina a URL base (Render ou Localhost) para corrigir o caminho das imagens
+    const baseUrl =
+      process.env.RENDER_EXTERNAL_URL || `${req.protocol}://${req.get("host")}`;
+
+    const produtosFormatados = produtos.map((produto) => {
+      const p = produto.toJSON();
+      if (p.imagem_url && !p.imagem_url.startsWith("http")) {
+        p.imagem_url = `${baseUrl}${p.imagem_url}`;
+      }
+      return p;
+    });
+
+    res.status(200).json(produtosFormatados);
   } catch (error) {
     next(error);
   }
