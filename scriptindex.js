@@ -254,7 +254,8 @@ async function carregarProdutosEmDestaque(forcarCache = false) {
 
   try {
     // Usar a URL base da API definida no config.js
-    const url = API_BASE_URL ? `${API_BASE_URL}/api/produtos` : "/api/produtos";
+    const baseUrl = typeof API_BASE_URL !== "undefined" ? API_BASE_URL : "";
+    const url = baseUrl ? `${baseUrl}/api/produtos` : "/api/produtos";
 
     // Adicionar timestamp para evitar cache
     const urlComCache = forcarCache ? `${url}?_=${Date.now()}` : url;
@@ -347,11 +348,19 @@ function renderizarProdutosDestaque(produtos) {
     .map((produto, index) => {
       const temImagem = !!produto.imagem_url;
       // Ajuste: Construir a URL completa da imagem usando a API_BASE_URL
-      const imagemSrc = temImagem
-        ? API_BASE_URL
-          ? `${API_BASE_URL}${produto.imagem_url}`
-          : produto.imagem_url
-        : "";
+      let imagemSrc = "";
+      if (temImagem) {
+        // Se a imagem já vier com http (do backend corrigido), usa ela direto
+        if (produto.imagem_url.startsWith("http")) {
+          imagemSrc = produto.imagem_url;
+        } else {
+          // Senão, adiciona a URL base se ela existir
+          imagemSrc =
+            typeof API_BASE_URL !== "undefined" && API_BASE_URL
+              ? `${API_BASE_URL}${produto.imagem_url}`
+              : produto.imagem_url;
+        }
+      }
 
       // Determinar badges
       const badges = [];
