@@ -118,6 +118,22 @@ function setupLoginButtons() {
 }
 
 function inicializar() {
+  // Configuração automática para ambiente de desenvolvimento local
+  if (!window.API_BASE_URL) {
+    // Verifica se está rodando localmente (localhost, IP local ou arquivo direto)
+    const isLocal =
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1" ||
+      window.location.protocol === "file:";
+
+    if (isLocal) {
+      console.warn(
+        "⚠️ API_BASE_URL não definida. Usando http://localhost:3000 como padrão."
+      );
+      window.API_BASE_URL = "http://localhost:3000";
+    }
+  }
+
   console.log(
     "🔌 Conectando à API em:",
     window.API_BASE_URL || "Mesmo domínio (Produção)"
@@ -269,7 +285,9 @@ async function carregarProdutosEmDestaque(forcarCache = false) {
     });
 
     if (!response.ok) {
-      throw new Error(`Erro na API: ${response.statusText}`);
+      throw new Error(
+        `Erro na API (${urlComCache}): ${response.status} ${response.statusText}`
+      );
     }
 
     const todosProdutos = await response.json();
@@ -355,9 +373,12 @@ function renderizarProdutosDestaque(produtos) {
           imagemSrc = produto.imagem_url;
         } else {
           // Senão, adiciona a URL base se ela existir
+          const path = produto.imagem_url.startsWith("/")
+            ? produto.imagem_url
+            : `/${produto.imagem_url}`;
           imagemSrc = window.API_BASE_URL
-            ? `${window.API_BASE_URL}${produto.imagem_url}`
-            : produto.imagem_url;
+            ? `${window.API_BASE_URL}${path}`
+            : path;
         }
       }
 
