@@ -558,3 +558,19 @@ setInterval(() => {
     carregarProdutosEmDestaque(true);
   }
 }, 5 * 60 * 1000); // 5 minutos
+
+// Crie uma imagem placeholder de emergência
+//function criarPlaceholderSeNecessario() {
+//const placeholderUrl = "/images/placeholder.jpg";
+//fetch(placeholderUrl).catch(() => {
+//console.log("⚠️ Criando imagem placeholder...");
+// Poderia criar uma imagem placeholder via código se necessário
+//});
+//}
+
+// Execute ao carregar a página
+//document.addEventListener("DOMContentLoaded", () => {
+// console.log("🚀 DOM carregado");
+//criarPlaceholderSeNecessario();
+//carregarProdutos();
+//});

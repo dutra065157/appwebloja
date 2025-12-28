@@ -199,11 +199,15 @@ function renderizarProdutos(produtosParaRenderizar) {
     .map((produto, index) => {
       const temImagem = !!produto.imagem_url;
       // Ajuste: Construir a URL completa da imagem usando a API_BASE_URL
-      const imagemSrc = temImagem
-        ? API_BASE_URL
+      let imagemSrc = "";
+      if (temImagem) {
+        // Se a imagem já vier com http (do backend), usa ela direto. Senão, concatena.
+        imagemSrc = produto.imagem_url.startsWith("http")
+          ? produto.imagem_url
+          : API_BASE_URL
           ? `${API_BASE_URL}${produto.imagem_url}`
-          : produto.imagem_url
-        : "";
+          : produto.imagem_url;
+      }
 
       // Determinar badges (MESMA LÓGICA DO INDEX.HTML)
       const badges = [];

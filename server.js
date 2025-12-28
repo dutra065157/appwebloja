@@ -21,8 +21,6 @@ const WHATSAPP_CONFIG = {
 app.use(cors()); // Habilita CORS para todas as rotas
 app.use(express.json({ limit: "10mb" })); // Aumenta o limite para receber imagens em base64
 
-app.use(express.static(__dirname)); // Serve arquivos estáticos (html, css, js) da pasta raiz
-
 // --- 📂 Configuração de Upload Local (Multer) ---
 const uploadDir = path.join(__dirname, "images");
 if (!fs.existsSync(uploadDir)) {
@@ -44,7 +42,20 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Servir a pasta de imagens publicamente
+// app.use("/images", (req, res, next) => {
+//   const arquivoSolicitado = req.path;
+//   const caminhoCompleto = path.join(uploadDir, arquivoSolicitado);
+//   const existe = fs.existsSync(caminhoCompleto);
+//
+//   console.log(
+//     `📂 [DEBUG IMAGEM] Solicitado: ${arquivoSolicitado} | Caminho: ${caminhoCompleto} | Existe? ${
+//       existe ? "✅ SIM" : "❌ NÃO"
+//     }`
+//   );
+//   next();
+// });
 app.use("/images", express.static(uploadDir));
+app.use(express.static(__dirname)); // Serve arquivos estáticos (html, css, js) da pasta raiz
 
 // --- 🍃 Conexão com o MongoDB usando Mongoose ---
 const MONGO_URI = process.env.MONGODB_URI;
@@ -202,16 +213,29 @@ app.get("/api/produtos", async (req, res, next) => {
     const produtos = await Produto.find().sort({ createdAt: -1 });
 
     // Determina a URL base (Render ou Localhost) para corrigir o caminho das imagens
-    const baseUrl =
-      process.env.RENDER_EXTERNAL_URL || `${req.protocol}://${req.get("host")}`;
+    const baseUrl = (
+      process.env.RENDER_EXTERNAL_URL || `${req.protocol}://${req.get("host")}`
+    ).replace(/\/$/, "");
 
     const produtosFormatados = produtos.map((produto) => {
       const p = produto.toJSON();
       if (p.imagem_url && !p.imagem_url.startsWith("http")) {
-        p.imagem_url = `${baseUrl}${p.imagem_url}`;
+        // Normaliza o caminho: substitui contra-barras por barras normais e garante a barra inicial
+        let caminhoImagem = p.imagem_url.replace(/\\/g, "/");
+        if (!caminhoImagem.startsWith("/")) {
+          caminhoImagem = `/${caminhoImagem}`;
+        }
+        p.imagem_url = `${baseUrl}${caminhoImagem}`;
       }
       return p;
     });
+
+    if (produtosFormatados.length > 0) {
+      console.log(
+        "🔍 Debug URL Imagem (Exemplo):",
+        produtosFormatados[0].imagem_url
+      );
+    }
 
     res.status(200).json(produtosFormatados);
   } catch (error) {
@@ -365,6 +389,42 @@ app.delete("/api/produtos/:id", authMiddleware, async (req, res, next) => {
       .json({ success: true, message: "Produto removido com sucesso." });
   } catch (error) {
     next(error);
+  }
+});
+
+// --- 🛠️ ROTA DE MANUTENÇÃO (NOVO) ---
+// Acessar via navegador: http://localhost:8000/api/fix-images
+// Verifica se as imagens dos produtos realmente existem no disco.
+// Se não existirem, remove a referência do banco para mostrar o ícone padrão.
+app.get("/api/fix-images", async (req, res) => {
+  try {
+    const produtos = await Produto.find();
+    let corrigidos = 0;
+
+    for (const produto of produtos) {
+      if (produto.imagem_url && !produto.imagem_url.startsWith("http")) {
+        // Extrai apenas o nome do arquivo (ex: /images/foto.png -> foto.png)
+        const nomeArquivo = path.basename(produto.imagem_url);
+        const caminhoArquivo = path.join(uploadDir, nomeArquivo);
+
+        if (!fs.existsSync(caminhoArquivo)) {
+          console.log(
+            `🗑️ Imagem perdida encontrada: ${nomeArquivo}. Removendo referência do produto "${produto.nome}"...`
+          );
+          produto.imagem_url = null; // Remove o link quebrado
+          await produto.save();
+          corrigidos++;
+        }
+      }
+    }
+
+    res.json({
+      success: true,
+      message: `Manutenção finalizada!`,
+      detalhes: `${corrigidos} produtos com imagens quebradas foram corrigidos (agora mostram o ícone).`,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
