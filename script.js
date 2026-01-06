@@ -253,8 +253,8 @@ function renderizarProdutos(produtosParaRenderizar) {
                           temImagem
                             ? `<img src="${imagemSrc}" 
                                   alt="${produto.nome}" 
-                                  class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500 product-image">`
-                            : `<div class="w-full h-48 ${
+                                  class="w-full h-56 md:h-64 object-contain bg-white group-hover:scale-110 transition-transform duration-500 product-image">`
+                            : `<div class="w-full h-56 md:h-64 ${
                                 produto.cor_gradiente ||
                                 "from-gray-400 to-gray-600"
                               } bg-gradient-to-br flex items-center justify-center group-hover:scale-105 transition-transform duration-500">

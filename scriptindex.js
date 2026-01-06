@@ -418,12 +418,12 @@ function renderizarProdutosDestaque(produtos) {
                      style="animation-delay: ${index * 100}ms">
                     <div class="relative overflow-hidden">
                         <!-- Imagem do produto -->
-                        <div class="w-full h-48 overflow-hidden bg-gray-100">
+                        <div class="w-full h-56 md:h-64 overflow-hidden bg-gray-100">
                             ${
                               temImagem
                                 ? `<img src="${imagemSrc}" 
                                       alt="${produto.nome}" 
-                                      class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                      class="w-full h-full object-contain bg-white group-hover:scale-110 transition-transform duration-500"
                                       loading="lazy"
                                       onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIGZpbGw9IiNGM0Y0RjYiLz48cGF0aCBkPSJNMjAwIDE1MEMyMzIgMTUwIDI1OCAxNzYgMjU4IDIwOEMyNTggMjQwIDIzMiAyNjYgMjAwIDI2NkMxNjggMjY2IDE0MiAyNDAgMTQyIDIwOEMxNDIgMTc2IDE2OCAxNTAgMjAwIDE1MFoiIGZpbGw9IiNEOEQ5REIiLz48cGF0aCBkPSJNMTUwIDI1MEgyNTBDMjY2LjU2OCAyNTAgMjgwIDI2My40MzIgMjgwIDI4MFYzMjBDMjgwIDMzNi41NjggMjY2LjU2OCAzNTAgMjUwIDM1MEgxNTBDMTMzLjQzMiAzNTAgMTIwIDMzNi41NjggMTIwIDMyMFYyODBDMTIwIDI2My40MzIgMTMzLjQzMiAyNTAgMTUwIDI1MFoiIGZpbGw9IiNEOEQ5REIiLz48L3N2Zz4=';">`
                                 : `<div class="w-full h-full ${
