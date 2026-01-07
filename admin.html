@@ -297,12 +297,6 @@
               class="bg-pink-100 text-pink-800 px-3 py-1 rounded-full text-sm font-medium"
               >0 produtos</span
             >
-            <button
-              onclick="exportarProdutos()"
-              class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-green-200 transition"
-            >
-              📤 Exportar
-            </button>
           </div>
         </div>
 
@@ -788,37 +782,6 @@
               "error"
             );
           }
-        }
-      }
-
-      async function exportarProdutos() {
-        try {
-          const baseUrl =
-            typeof API_BASE_URL !== "undefined" ? API_BASE_URL : "";
-          const url = baseUrl ? `${baseUrl}/api/produtos` : "/api/produtos";
-          const response = await fetch(url);
-          if (!response.ok)
-            throw new Error("Falha ao buscar produtos para exportação");
-          const produtos = await response.json();
-
-          const dadosString = JSON.stringify(produtos, null, 2);
-          const blob = new Blob([dadosString], { type: "application/json" });
-          const urlObject = URL.createObjectURL(blob);
-
-          const a = document.createElement("a");
-          a.href = urlObject;
-          a.download = `produtos_graca_presentes_${
-            new Date().toISOString().split("T")[0]
-          }.json`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(urlObject);
-
-          mostrarFeedback("✅ Produtos exportados com sucesso!", "success");
-          resetIdleTimer(); // Resetar timer após ação
-        } catch (error) {
-          mostrarFeedback(`❌ ${error.message}`, "error");
         }
       }
 
