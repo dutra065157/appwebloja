@@ -58,7 +58,7 @@ class Carrinho {
     const contadores = document.querySelectorAll("#cart-count");
     const totalItens = this.itens.reduce(
       (total, item) => total + item.quantidade,
-      0
+      0,
     );
 
     contadores.forEach((contador) => {
@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", function () {
 function setupLoginButtons() {
   // Botão de usuário (ícone de usuário)
   const userButtons = document.querySelectorAll(
-    'button[onclick*="login.html"]'
+    'button[onclick*="login.html"]',
   );
   userButtons.forEach((button) => {
     // Remover o atributo onclick existente
@@ -128,7 +128,7 @@ function inicializar() {
 
     if (isLocal) {
       console.warn(
-        "⚠️ API_BASE_URL não definida. Usando http://localhost:3000 como padrão."
+        "⚠️ API_BASE_URL não definida. Usando http://localhost:3000 como padrão.",
       );
       window.API_BASE_URL = "http://localhost:3000";
     }
@@ -136,7 +136,7 @@ function inicializar() {
 
   console.log(
     "🔌 Conectando à API em:",
-    window.API_BASE_URL || "Mesmo domínio (Produção)"
+    window.API_BASE_URL || "Mesmo domínio (Produção)",
   );
   carregarProdutosEmDestaque();
   inicializarMobileMenu();
@@ -154,7 +154,7 @@ function inicializarMobileMenu() {
       if (icon) {
         icon.setAttribute(
           "data-feather",
-          mobileMenu.classList.contains("hidden") ? "menu" : "x"
+          mobileMenu.classList.contains("hidden") ? "menu" : "x",
         );
         feather.replace();
       }
@@ -196,7 +196,7 @@ function inicializarNewsletter() {
       setTimeout(() => {
         mostrarNotificacao(
           `Obrigado por assinar nossa newsletter! Enviaremos novidades para: ${email}`,
-          "success"
+          "success",
         );
         emailInput.value = "";
         button.innerHTML = originalText;
@@ -222,8 +222,8 @@ function mostrarNotificacao(mensagem, tipo) {
     tipo === "success"
       ? "bg-green-500"
       : tipo === "error"
-      ? "bg-red-500"
-      : "bg-blue-500"
+        ? "bg-red-500"
+        : "bg-blue-500"
   } text-white`;
   notificacao.innerHTML = `
                 <div class="flex items-center">
@@ -232,8 +232,8 @@ function mostrarNotificacao(mensagem, tipo) {
                           tipo === "success"
                             ? "check"
                             : tipo === "error"
-                            ? "alert-triangle"
-                            : "info"
+                              ? "alert-triangle"
+                              : "info"
                         }" class="w-5 h-5"></i>
                     </div>
                     <div>
@@ -286,7 +286,7 @@ async function carregarProdutosEmDestaque(forcarCache = false) {
 
     if (!response.ok) {
       throw new Error(
-        `Erro na API (${urlComCache}): ${response.status} ${response.statusText}`
+        `Erro na API (${urlComCache}): ${response.status} ${response.statusText}`,
       );
     }
 
@@ -295,12 +295,12 @@ async function carregarProdutosEmDestaque(forcarCache = false) {
     // Lógica para selecionar produtos em destaque
     const maisVendidos = todosProdutos.filter((p) => p.mais_vendido);
     const novos = todosProdutos.filter(
-      (p) => p.novo && !maisVendidos.some((mv) => mv.id === p.id)
+      (p) => p.novo && !maisVendidos.some((mv) => mv.id === p.id),
     );
     const outros = todosProdutos.filter(
       (p) =>
         !maisVendidos.some((mv) => mv.id === p.id) &&
-        !novos.some((n) => n.id === p.id)
+        !novos.some((n) => n.id === p.id),
     );
 
     produtosEmDestaque = [...maisVendidos, ...novos, ...outros].slice(0, 4);
@@ -452,8 +452,8 @@ function renderizarProdutosDestaque(produtos) {
                                 ${produto.nome}
                             </h3>
                             <span class="bg-${produto.cor || "gray"}-100 text-${
-        produto.cor || "gray"
-      }-600 text-xs px-2 py-1 rounded-full whitespace-nowrap flex-shrink-0">
+                              produto.cor || "gray"
+                            }-600 text-xs px-2 py-1 rounded-full whitespace-nowrap flex-shrink-0">
                                 ${produto.categoria}
                             </span>
                         </div>
@@ -478,7 +478,7 @@ function renderizarProdutosDestaque(produtos) {
                                     precoFinal
                                     ? `<span class="text-xs text-gray-400 line-through">
                                         De: R$ ${parseFloat(
-                                          produto.preco_original
+                                          produto.preco_original,
                                         )
                                           .toFixed(2)
                                           .replace(".", ",")}
@@ -553,24 +553,11 @@ document.addEventListener("visibilitychange", function () {
 });
 
 // Recarregar produtos a cada 5 minutos se a página estiver visível
-setInterval(() => {
-  if (document.visibilityState === "visible") {
-    carregarProdutosEmDestaque(true);
-  }
-}, 5 * 60 * 1000); // 5 minutos
-
-// Crie uma imagem placeholder de emergência
-//function criarPlaceholderSeNecessario() {
-//const placeholderUrl = "/images/placeholder.jpg";
-//fetch(placeholderUrl).catch(() => {
-//console.log("⚠️ Criando imagem placeholder...");
-// Poderia criar uma imagem placeholder via código se necessário
-//});
-//}
-
-// Execute ao carregar a página
-//document.addEventListener("DOMContentLoaded", () => {
-// console.log("🚀 DOM carregado");
-//criarPlaceholderSeNecessario();
-//carregarProdutos();
-//});
+setInterval(
+  () => {
+    if (document.visibilityState === "visible") {
+      carregarProdutosEmDestaque(true);
+    }
+  },
+  5 * 60 * 1000,
+); // 5 minutos
