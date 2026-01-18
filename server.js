@@ -41,19 +41,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Servir a pasta de imagens publicamente
-// app.use("/images", (req, res, next) => {
-//   const arquivoSolicitado = req.path;
-//   const caminhoCompleto = path.join(uploadDir, arquivoSolicitado);
-//   const existe = fs.existsSync(caminhoCompleto);
-//
-//   console.log(
-//     `📂 [DEBUG IMAGEM] Solicitado: ${arquivoSolicitado} | Caminho: ${caminhoCompleto} | Existe? ${
-//       existe ? "✅ SIM" : "❌ NÃO"
-//     }`
-//   );
-//   next();
-// });
 app.use("/images", express.static(uploadDir));
 app.use(express.static(__dirname)); // Serve arquivos estáticos (html, css, js) da pasta raiz
 
@@ -61,7 +48,7 @@ app.use(express.static(__dirname)); // Serve arquivos estáticos (html, css, js)
 const MONGO_URI = process.env.MONGODB_URI;
 if (!MONGO_URI) {
   console.error(
-    "❌ Erro: A variável de ambiente MONGODB_URI não foi definida."
+    "❌ Erro: A variável de ambiente MONGODB_URI não foi definida.",
   );
   process.exit(1);
 }
@@ -112,7 +99,7 @@ const authMiddleware = (req, res, next) => {
 
   if (token == null) {
     console.warn(
-      `⚠️  Acesso negado (401): Token não fornecido para ${req.method} ${req.path}`
+      `⚠️  Acesso negado (401): Token não fornecido para ${req.method} ${req.path}`,
     );
     return res
       .status(401)
@@ -127,7 +114,7 @@ const authMiddleware = (req, res, next) => {
     next(); // Token válido, continue
   } else {
     console.warn(
-      `⚠️  Acesso negado (403): Token inválido para ${req.method} ${req.path}`
+      `⚠️  Acesso negado (403): Token inválido para ${req.method} ${req.path}`,
     );
     return res.status(403).json({ error: "Token inválido." });
   }
@@ -233,7 +220,7 @@ app.get("/api/produtos", async (req, res, next) => {
     if (produtosFormatados.length > 0) {
       console.log(
         "🔍 Debug URL Imagem (Exemplo):",
-        produtosFormatados[0].imagem_url
+        produtosFormatados[0].imagem_url,
       );
     }
 
@@ -301,7 +288,7 @@ app.post(
     } catch (error) {
       next(error);
     }
-  }
+  },
 );
 
 // Rota para buscar todos os pedidos
@@ -409,7 +396,7 @@ app.get("/api/fix-images", async (req, res) => {
 
         if (!fs.existsSync(caminhoArquivo)) {
           console.log(
-            `🗑️ Imagem perdida encontrada: ${nomeArquivo}. Removendo referência do produto "${produto.nome}"...`
+            `🗑️ Imagem perdida encontrada: ${nomeArquivo}. Removendo referência do produto "${produto.nome}"...`,
           );
           produto.imagem_url = null; // Remove o link quebrado
           await produto.save();
