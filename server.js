@@ -236,6 +236,7 @@ app.post(
       if (req.file) {
         // Cloudinary retorna a URL completa na propriedade .path
         imagemUrl = req.file.path;
+        console.log("📸 Upload realizado no Cloudinary:", imagemUrl);
       }
 
       // Helpers para converter números (trata vírgula e ponto e evita NaN)
