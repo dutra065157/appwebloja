@@ -21,24 +21,12 @@ const WHATSAPP_CONFIG = {
 app.use(cors()); // Habilita CORS para todas as rotas
 app.use(express.json({ limit: "10mb" })); // Aumenta o limite para receber imagens em base64
 
-// --- 📂 Configuração de Upload Local (Multer) ---
+// --- 📂 Configuração de Upload (Cloudinary) ---
+// Mantemos a pasta images apenas para servir imagens antigas que já existam localmente
 const uploadDir = path.join(__dirname, "images");
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    // Gera um nome único: timestamp-random.extensão
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
-    cb(null, "produto-" + uniqueSuffix + ext);
-  },
-});
-
+// Importa a configuração do Cloudinary (substitui o diskStorage local)
+const storage = require("./cloudinary");
 const upload = multer({ storage: storage });
 
 app.use("/images", express.static(uploadDir));
@@ -246,7 +234,8 @@ app.post(
       // Se houver arquivo, cria a URL relativa
       let imagemUrl = null;
       if (req.file) {
-        imagemUrl = `/images/${req.file.filename}`;
+        // Cloudinary retorna a URL completa na propriedade .path
+        imagemUrl = req.file.path;
       }
 
       // Helpers para converter números (trata vírgula e ponto e evita NaN)
@@ -352,15 +341,18 @@ app.delete("/api/produtos/:id", authMiddleware, async (req, res, next) => {
     // Lógica para remover a imagem local antes de remover do DB
     const produto = await Produto.findById(id);
     if (produto && produto.imagem_url) {
-      try {
-        // Remove a barra inicial se existir para o caminho do sistema de arquivos
-        const imagePath = path.join(__dirname, produto.imagem_url);
-        if (fs.existsSync(imagePath)) {
-          fs.unlinkSync(imagePath);
+      // Apenas tenta deletar do disco se for uma imagem local antiga (não começa com http)
+      if (!produto.imagem_url.startsWith("http")) {
+        try {
+          // Remove a barra inicial se existir para o caminho do sistema de arquivos
+          const imagePath = path.join(__dirname, produto.imagem_url);
+          if (fs.existsSync(imagePath)) {
+            fs.unlinkSync(imagePath);
+          }
+        } catch (fsError) {
+          // Loga o erro mas continua o processo de deleção do produto no DB
+          console.error("Erro ao deletar imagem local:", fsError);
         }
-      } catch (fsError) {
-        // Loga o erro mas continua o processo de deleção do produto no DB
-        console.error("Erro ao deletar imagem local:", fsError);
       }
     }
 
@@ -431,7 +423,7 @@ app.listen(PORT, () => {
   console.log("🚀 GRAÇA PRESENTES - Servidor Node.js Iniciado!");
   console.log(`📍 URL: ${baseUrl}`);
   console.log("💾 Banco de dados: MongoDB (Mongoose)");
-  console.log("🖼️  Upload de Imagens: Local (/images)");
+  console.log("☁️  Upload de Imagens: Cloudinary");
   console.log("⏹️ Para parar: Ctrl+C");
   console.log("=".repeat(60));
 });

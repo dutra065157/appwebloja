@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
@@ -46,13 +46,13 @@
         <div class="flex items-center space-x-4">
           <button
             class="p-2 rounded-full hover:bg-pink-100 transition"
-            onclick="window.location.href='admin.html'"
+            onclick="window.location.href = 'admin.html'"
           >
             <i data-feather="user"></i>
           </button>
           <button
             class="p-2 rounded-full hover:bg-pink-100 transition relative"
-            onclick="window.location.href='carrinho.html'"
+            onclick="window.location.href = 'carrinho.html'"
           >
             <i data-feather="shopping-cart"></i>
             <span
@@ -124,7 +124,7 @@
             Adicione alguns produtos incríveis ao seu carrinho!
           </p>
           <button
-            onclick="window.location.href='produtos.html'"
+            onclick="window.location.href = 'produtos.html'"
             class="bg-pink-500 hover:bg-pink-600 text-white px-6 py-3 rounded-lg font-medium transition"
           >
             Explorar Produtos
@@ -362,7 +362,7 @@
 
         adicionarItem(produto) {
           const itemExistente = this.itens.find(
-            (item) => item.id === produto.id
+            (item) => item.id === produto.id,
           );
 
           if (itemExistente) {
@@ -402,7 +402,7 @@
           const contadores = document.querySelectorAll("#cart-count");
           const totalItens = this.itens.reduce(
             (total, item) => total + item.quantidade,
-            0
+            0,
           );
 
           contadores.forEach((contador) => {
@@ -432,7 +432,7 @@
         getTotal() {
           return this.itens.reduce(
             (total, item) => total + item.preco * item.quantidade,
-            0
+            0,
           );
         }
 
@@ -573,7 +573,7 @@
                         </div>
                     </div>
                 </div>
-            `
+            `,
           )
           .join("");
 
@@ -587,7 +587,7 @@
                 <div class="flex justify-between">
                     <span class="text-gray-600">Subtotal (${itens.reduce(
                       (acc, item) => acc + item.quantidade,
-                      0
+                      0,
                     )} itens)</span>
                     <span class="font-medium">R$ ${subtotal
                       .toFixed(2)
@@ -692,7 +692,7 @@
         }
 
         dadosCliente.telefone = prompt(
-          "📞 Telefone com DDD (apenas números, ex: 11999999999):"
+          "📞 Telefone com DDD (apenas números, ex: 11999999999):",
         );
         if (!dadosCliente.telefone) {
           alert("Telefone é obrigatório!");
@@ -703,7 +703,7 @@
         const telefoneLimpo = dadosCliente.telefone.replace(/\D/g, "");
         if (telefoneLimpo.length < 10 || telefoneLimpo.length > 11) {
           alert(
-            "Por favor, insira um telefone válido com DDD (10 ou 11 dígitos)."
+            "Por favor, insira um telefone válido com DDD (10 ou 11 dígitos).",
           );
           return;
         }
@@ -730,7 +730,7 @@
             carrinho.getTotal() +
             15 -
             (carrinho.desconto || 0)
-          ).toFixed(2)}\n\nConfirmar envio do pedido?`
+          ).toFixed(2)}\n\nConfirmar envio do pedido?`,
         );
 
         if (!confirmacao) {
@@ -739,7 +739,7 @@
         }
 
         const botaoFinalizar = document.querySelector(
-          'button[onclick="finalizarCompra()"]'
+          'button[onclick="finalizarCompra()"]',
         );
         const textoOriginal = botaoFinalizar.innerHTML;
         botaoFinalizar.innerHTML =
@@ -774,7 +774,7 @@
           }
         } catch (error) {
           alert(
-            `❌ ERRO NO PEDIDO\n\n${error.message}\n\n🔧 Verifique se o servidor está rodando:\n1. Abra o terminal/cmd\n2. Navegue até a pasta do projeto\n3. Execute: python server.py\n4. Tente novamente`
+            `❌ ERRO NO PEDIDO\n\n${error.message}\n\n🔧 Verifique se o servidor está rodando:\n1. Abra o terminal/cmd\n2. Navegue até a pasta do projeto\n3. Execute: python server.py\n4. Tente novamente`,
           );
         } finally {
           botaoFinalizar.innerHTML = textoOriginal;
@@ -801,7 +801,7 @@
             if (icon) {
               icon.setAttribute(
                 "data-feather",
-                mobileMenu.classList.contains("hidden") ? "menu" : "x"
+                mobileMenu.classList.contains("hidden") ? "menu" : "x",
               );
               feather.replace();
             }
