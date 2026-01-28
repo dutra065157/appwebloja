@@ -32,7 +32,7 @@ O projeto foi desenvolvido utilizando as seguintes tecnologias:
 
 - ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=flat&logo=html5&logoColor=white) **HTML5 Semântico**.
 - ![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=flat&logo=css3&logoColor=white) **CSS3 & Tailwind**: Estilização moderna e responsiva.
-- ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=flat&logo=javascript&logoColor=%23F7DF1E) **JavaScript (ES6+)**: Lógica de carrinho e interação com API.
+- ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=flat&logo=javascript&logoColor=%23F7DF1E) **JavaScript (ES6+)**: Lógica de carrinho, gerenciamento de modais e interação com API.
 - **Feather Icons**: Ícones leves e modernos.
 
 ---
@@ -43,8 +43,9 @@ O projeto foi desenvolvido utilizando as seguintes tecnologias:
 
 - **Catálogo Visual:** Visualização de produtos com filtros por categoria (Flores, Doces, Pelúcias, etc.).
 - **Carrinho de Compras:** Adição/remoção de itens com cálculo automático de total e descontos.
-- **Checkout via WhatsApp:** O pedido é formatado e enviado diretamente para o WhatsApp da loja com um clique.
-- **Responsividade:** Layout adaptado para Celulares, Tablets e Desktop.
+- **Fluxo de Checkout Completo:** Finalização de compra em etapas (Dados, Resumo e Sucesso) via Modais interativos.
+- **Integração WhatsApp:** Geração automática de número de pedido único (#ID) e envio da mensagem formatada.
+- **Responsividade:** Layout adaptado para Celulares, Tablets e Desktop com ajustes visuais dinâmicos.
 
 ### ⚙️ Painel Administrativo (Admin)
 
