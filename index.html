@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
@@ -87,7 +87,7 @@
         <div class="flex items-center space-x-3">
           <button
             class="p-2 rounded-full hover:bg-pink-50 transition-all duration-300"
-            onclick="window.location.href='login.html'"
+            onclick="window.location.href = 'login.html'"
             aria-label="Minha conta"
           >
             <i data-feather="user" class="w-5 h-5 text-gray-600"></i>
@@ -95,7 +95,7 @@
 
           <button
             class="p-2 rounded-full hover:bg-pink-50 transition-all duration-300 relative"
-            onclick="window.location.href='carrinho.html'"
+            onclick="window.location.href = 'carrinho.html'"
             aria-label="Carrinho de compras"
           >
             <i data-feather="shopping-cart" class="w-5 h-5 text-gray-600"></i>
@@ -174,7 +174,7 @@
           >
             <button
               class="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center group"
-              onclick="window.location.href='produtos.html'"
+              onclick="window.location.href = 'produtos.html'"
             >
               <span>Comprar Agora</span>
               <i
@@ -184,7 +184,7 @@
             </button>
             <button
               class="border-2 border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:-translate-y-1"
-              onclick="window.location.href='produtos.html'"
+              onclick="window.location.href = 'produtos.html'"
             >
               Ver Catálogo
             </button>
@@ -207,26 +207,32 @@
           </div>
         </div>
 
-        <div class="md:w-1/2 flex justify-center">
+        <div class="md:w-1/2 flex justify-center mt-10 md:mt-0">
           <div class="relative w-full max-w-lg">
             <div
-              class="w-full h-80 bg-gradient-to-br from-pink-200 via-purple-200 to-blue-200 rounded-2xl shadow-2xl flex items-center justify-center transform rotate-3 hover:rotate-0 transition-transform duration-500"
+              class="w-full h-64 md:h-80 bg-gradient-to-br from-pink-200 via-purple-200 to-blue-200 rounded-2xl shadow-2xl flex items-center justify-center transform rotate-3 hover:rotate-0 transition-transform duration-500"
             >
               <i
                 data-feather="gift"
-                class="w-32 h-32 text-pink-500 animate-pulse"
+                class="w-24 h-24 md:w-32 md:h-32 text-pink-500 animate-pulse"
               ></i>
             </div>
             <!-- Floating elements -->
             <div
-              class="absolute -top-4 -left-4 w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center shadow-lg"
+              class="absolute -top-2 -left-2 md:-top-4 md:-left-4 w-16 h-16 md:w-20 md:h-20 bg-yellow-100 rounded-full flex items-center justify-center shadow-lg"
             >
-              <i data-feather="heart" class="w-8 h-8 text-rose-500"></i>
+              <i
+                data-feather="heart"
+                class="w-6 h-6 md:w-8 md:h-8 text-rose-500"
+              ></i>
             </div>
             <div
-              class="absolute -bottom-4 -right-4 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center shadow-lg"
+              class="absolute -bottom-2 -right-2 md:-bottom-4 md:-right-4 w-12 h-12 md:w-16 md:h-16 bg-green-100 rounded-full flex items-center justify-center shadow-lg"
             >
-              <i data-feather="star" class="w-6 h-6 text-green-600"></i>
+              <i
+                data-feather="star"
+                class="w-4 h-4 md:w-6 md:h-6 text-green-600"
+              ></i>
             </div>
           </div>
         </div>
@@ -250,7 +256,7 @@
           <!-- Flores -->
           <div
             class="category-card group bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl p-6 text-center hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:-translate-y-2 border border-pink-100"
-            onclick="window.location.href='produtos.html?categoria=Flores'"
+            onclick="window.location.href = 'produtos.html?categoria=Flores'"
           >
             <div
               class="w-20 h-20 bg-gradient-to-br from-pink-200 to-rose-300 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300"
@@ -271,7 +277,7 @@
           <!-- Café -->
           <div
             class="category-card group bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-6 text-center hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:-translate-y-2 border border-amber-100"
-            onclick="window.location.href='produtos.html?categoria=Kits'"
+            onclick="window.location.href = 'produtos.html?categoria=Kits'"
           >
             <div
               class="w-20 h-20 bg-gradient-to-br from-amber-200 to-orange-300 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300"
@@ -292,7 +298,7 @@
           <!-- Chocolates -->
           <div
             class="category-card group bg-gradient-to-br from-yellow-50 to-amber-50 rounded-2xl p-6 text-center hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:-translate-y-2 border border-yellow-100"
-            onclick="window.location.href='produtos.html?categoria=Doces'"
+            onclick="window.location.href = 'produtos.html?categoria=Doces'"
           >
             <div
               class="w-20 h-20 bg-gradient-to-br from-yellow-200 to-amber-300 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300"
@@ -311,7 +317,9 @@
           <!-- Românticos -->
           <div
             class="category-card group bg-gradient-to-br from-rose-50 to-pink-50 rounded-2xl p-6 text-center hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:-translate-y-2 border border-rose-100"
-            onclick="window.location.href='produtos.html?categoria=Românticos'"
+            onclick="
+              window.location.href = 'produtos.html?categoria=Românticos'
+            "
           >
             <div
               class="w-20 h-20 bg-gradient-to-br from-rose-200 to-pink-300 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300"
@@ -583,7 +591,8 @@
               </li>
               <li class="flex items-center">
                 <i data-feather="phone" class="mr-3 w-5 h-5 text-pink-400"></i>
-                <span class="text-gray-300">(19) 9876-5432</span>
+                <span class="text-gray-300">(19) 99999-9999</span>
+                <!-- <-- Coloque aqui o número formatado -->
               </li>
               <li class="flex items-center">
                 <i data-feather="mail" class="mr-3 w-5 h-5 text-pink-400"></i>

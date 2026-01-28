@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
@@ -370,19 +370,22 @@
       let idleTimer;
       function resetIdleTimer() {
         clearTimeout(idleTimer);
-        idleTimer = setTimeout(() => {
-          // Verificar se ainda está autenticado
-          const token = localStorage.getItem("admin_token");
-          if (token) {
-            mostrarFeedback(
-              "⏰ Sessão expirada por inatividade. Redirecionando...",
-              "warning"
-            );
-            setTimeout(() => {
-              fazerLogout();
-            }, 2000);
-          }
-        }, 30 * 60 * 1000); // 30 minutos
+        idleTimer = setTimeout(
+          () => {
+            // Verificar se ainda está autenticado
+            const token = localStorage.getItem("admin_token");
+            if (token) {
+              mostrarFeedback(
+                "⏰ Sessão expirada por inatividade. Redirecionando...",
+                "warning",
+              );
+              setTimeout(() => {
+                fazerLogout();
+              }, 2000);
+            }
+          },
+          30 * 60 * 1000,
+        ); // 30 minutos
       }
 
       // Iniciar timer de inatividade ao carregar a página
@@ -406,7 +409,7 @@
         if (!token) {
           mostrarFeedback(
             "🔒 Sessão expirada. Redirecionando para login...",
-            "warning"
+            "warning",
           );
           setTimeout(() => {
             window.location.href = "login.html";
@@ -436,7 +439,7 @@
           if (!file.type.match("image.*")) {
             mostrarFeedback(
               "❌ Por favor, selecione apenas arquivos de imagem",
-              "error"
+              "error",
             );
             return;
           }
@@ -501,7 +504,7 @@
           formData.append("novo", document.getElementById("novo").checked);
           formData.append(
             "mais_vendido",
-            document.getElementById("maisVendido").checked
+            document.getElementById("maisVendido").checked,
           );
 
           // Adicionar imagem se existir
@@ -530,7 +533,7 @@
               if (response.status === 401) {
                 mostrarFeedback(
                   "🔒 Sessão expirada. Redirecionando...",
-                  "error"
+                  "error",
                 );
                 setTimeout(() => fazerLogout(), 2000);
                 return;
@@ -552,7 +555,7 @@
             console.error("Erro ao cadastrar produto:", error);
             mostrarFeedback(
               "❌ Erro ao cadastrar produto: " + error.message,
-              "error"
+              "error",
             );
           } finally {
             button.innerHTML = originalText;
@@ -694,10 +697,10 @@
                                     <span class="bg-${
                                       produto.cor || "gray"
                                     }-100 text-${
-                produto.cor || "gray"
-              }-600 text-xs px-2 py-1 rounded-full whitespace-nowrap flex-shrink-0">${
-                produto.categoria
-              }</span>
+                                      produto.cor || "gray"
+                                    }-600 text-xs px-2 py-1 rounded-full whitespace-nowrap flex-shrink-0">${
+                                      produto.categoria
+                                    }</span>
                                     ${
                                       produto.desconto > 0
                                         ? `<span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">${produto.desconto}% OFF</span>`
@@ -762,7 +765,7 @@
               if (response.status === 401) {
                 mostrarFeedback(
                   "🔒 Sessão expirada. Redirecionando...",
-                  "error"
+                  "error",
                 );
                 setTimeout(() => fazerLogout(), 2000);
                 return;
@@ -779,7 +782,7 @@
             console.error("Erro ao remover produto:", error);
             mostrarFeedback(
               "❌ Erro ao remover produto: " + error.message,
-              "error"
+              "error",
             );
           }
         }
@@ -813,7 +816,7 @@
             if (icon) {
               icon.setAttribute(
                 "data-feather",
-                mobileMenu.classList.contains("hidden") ? "menu" : "x"
+                mobileMenu.classList.contains("hidden") ? "menu" : "x",
               );
               feather.replace();
             }

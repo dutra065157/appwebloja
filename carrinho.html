@@ -280,7 +280,8 @@
               </li>
               <li class="flex items-center">
                 <i data-feather="phone" class="mr-3 w-5 h-5 text-pink-400"></i>
-                <span class="text-gray-300">(19) 9876-5432</span>
+                <span class="text-gray-300">(19) 99999-9999</span>
+                <!-- <-- Coloque aqui o número formatado -->
               </li>
               <li class="flex items-center">
                 <i data-feather="mail" class="mr-3 w-5 h-5 text-pink-400"></i>
@@ -314,45 +315,207 @@
       </div>
     </footer>
 
-    <!-- Modal de Confirmação -->
+    <!-- MODAL 1: DADOS DO CLIENTE (Etapa 2) -->
     <div
-      id="modal-confirmacao"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden"
+      id="modal-dados-cliente"
+      class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden transition-opacity duration-300"
     >
-      <div class="bg-white rounded-xl shadow-lg max-w-md w-full">
-        <div class="p-6">
-          <div
-            class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4"
+      <div
+        class="bg-white rounded-2xl shadow-2xl max-w-lg w-full transform transition-all scale-100"
+      >
+        <div
+          class="p-6 border-b border-gray-100 flex justify-between items-center"
+        >
+          <h3 class="text-xl font-bold text-gray-800">Seus Dados</h3>
+          <button
+            onclick="fecharModal('modal-dados-cliente')"
+            class="text-gray-400 hover:text-gray-600"
           >
-            <i data-feather="check" class="w-8 h-8 text-green-600"></i>
+            <i data-feather="x"></i>
+          </button>
+        </div>
+
+        <div class="p-6">
+          <form id="form-dados-cliente" onsubmit="irParaResumo(event)">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1"
+                  >Nome Completo *</label
+                >
+                <input
+                  type="text"
+                  id="cliente-nome"
+                  required
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent transition"
+                  placeholder="Ex: Maria Silva"
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1"
+                  >WhatsApp / Telefone *</label
+                >
+                <input
+                  type="tel"
+                  id="cliente-telefone"
+                  required
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent transition"
+                  placeholder="Ex: 11999999999"
+                />
+                <p class="text-xs text-gray-500 mt-1">Apenas números com DDD</p>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1"
+                  >Endereço de Entrega *</label
+                >
+                <textarea
+                  id="cliente-endereco"
+                  required
+                  rows="2"
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent transition"
+                  placeholder="Rua, Número, Bairro, Cidade..."
+                ></textarea>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1"
+                  >Observações (Opcional)</label
+                >
+                <textarea
+                  id="cliente-observacoes"
+                  rows="2"
+                  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent transition"
+                  placeholder="Ex: Ponto de referência, recado para cartão..."
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="mt-8">
+              <button
+                type="submit"
+                class="w-full bg-pink-500 hover:bg-pink-600 text-white py-3 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-1"
+              >
+                Revisar Pedido
+                <i
+                  data-feather="arrow-right"
+                  class="inline-block ml-2 w-5 h-5"
+                ></i>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL 2: RESUMO DO PEDIDO (Etapa 3) -->
+    <div
+      id="modal-resumo"
+      class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden"
+    >
+      <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full">
+        <div class="p-6 border-b border-gray-100">
+          <h3 class="text-xl font-bold text-gray-800">Revisar Pedido</h3>
+        </div>
+
+        <div class="p-6 max-h-[70vh] overflow-y-auto">
+          <!-- Dados do Cliente -->
+          <div class="bg-gray-50 rounded-xl p-4 mb-6">
+            <h4 class="font-semibold text-gray-700 mb-2 flex items-center">
+              <i data-feather="user" class="w-4 h-4 mr-2"></i> Dados de Entrega
+            </h4>
+            <div id="resumo-cliente" class="text-sm text-gray-600 space-y-1">
+              <!-- Preenchido via JS -->
+            </div>
           </div>
-          <h3 class="text-xl font-semibold text-gray-800 text-center mb-2">
-            Pedido Confirmado!
-          </h3>
-          <p class="text-gray-600 text-center mb-6">
-            Seu pedido foi enviado para o vendedor. Redirecionando para
-            acompanhamento...
+
+          <!-- Itens -->
+          <h4 class="font-semibold text-gray-700 mb-2">Itens do Pedido</h4>
+          <div id="resumo-itens" class="space-y-3 mb-6">
+            <!-- Preenchido via JS -->
+          </div>
+
+          <!-- Total -->
+          <div
+            class="border-t border-gray-200 pt-4 flex justify-between items-center"
+          >
+            <span class="font-bold text-gray-800">Total Final</span>
+            <span id="resumo-total" class="font-bold text-2xl text-pink-600"
+              >R$ 0,00</span
+            >
+          </div>
+        </div>
+
+        <div class="p-6 border-t border-gray-100 flex gap-4">
+          <button
+            onclick="voltarParaDados()"
+            class="flex-1 border border-gray-300 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-50 transition"
+          >
+            Voltar
+          </button>
+          <button
+            onclick="confirmarPedido()"
+            id="btn-confirmar-final"
+            class="flex-1 bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 flex justify-center items-center"
+          >
+            Confirmar Tudo <i data-feather="check-circle" class="ml-2"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL 3: SUCESSO (Etapa 6 e 7) -->
+    <div
+      id="modal-sucesso"
+      class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden"
+    >
+      <div
+        class="bg-white rounded-2xl shadow-2xl max-w-md w-full text-center overflow-hidden"
+      >
+        <div class="bg-green-500 p-6">
+          <div
+            class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-sm"
+          >
+            <i data-feather="check" class="w-10 h-10 text-white"></i>
+          </div>
+          <h3 class="text-2xl font-bold text-white">Pedido Realizado!</h3>
+          <p class="text-green-100 mt-1">Obrigado pela preferência</p>
+        </div>
+
+        <div class="p-8">
+          <p class="text-gray-500 mb-2">Seu número de pedido é:</p>
+          <div
+            id="sucesso-pedido-id"
+            class="text-3xl font-mono font-bold text-gray-800 mb-6 bg-gray-100 py-3 rounded-lg border border-gray-200 select-all"
+          >
+            #000000
+          </div>
+
+          <p class="text-gray-600 mb-6 text-sm">
+            Para agilizar o atendimento, envie os detalhes do pedido para nosso
+            WhatsApp agora.
           </p>
-          <div class="flex flex-col gap-3">
-            <button
-              onclick="acompanharPedido()"
-              class="bg-gradient-to-r from-pink-500 to-purple-500 text-white py-3 px-6 rounded-lg font-semibold hover:opacity-90 transition"
-            >
-              Acompanhar Pedido Agora
-            </button>
-            <button
-              onclick="voltarInicio()"
-              class="border border-gray-300 text-gray-700 py-3 px-6 rounded-lg font-semibold hover:bg-gray-50 transition"
-            >
-              Voltar ao Início
-            </button>
-          </div>
+
+          <button
+            id="btn-whatsapp"
+            class="w-full bg-[#25D366] hover:bg-[#128C7E] text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 flex items-center justify-center mb-4"
+          >
+            <i data-feather="message-circle" class="w-6 h-6 mr-2"></i> Enviar
+            para WhatsApp
+          </button>
+
+          <button
+            onclick="window.location.href = 'index.html'"
+            class="text-gray-400 hover:text-gray-600 text-sm font-medium"
+          >
+            Voltar para a Loja
+          </button>
         </div>
       </div>
     </div>
 
     <script>
-      // Classe Carrinho atualizada com WhatsApp
+      // Classe Carrinho
       class Carrinho {
         constructor() {
           this.itens = JSON.parse(localStorage.getItem("carrinho")) || [];
@@ -452,7 +615,7 @@
           this.atualizarContador();
         }
 
-        // MÉTODO ATUALIZADO: Enviar pedido para o backend Python com WhatsApp
+        // MÉTODO ATUALIZADO: Apenas envia e retorna a resposta
         async enviarPedido(dadosCliente) {
           try {
             const pedidoData = {
@@ -467,9 +630,10 @@
               total: this.getTotalComDesconto(),
             };
 
-            console.log("Enviando pedido:", pedidoData);
-
-            const response = await fetch("/api/pedidos", {
+            // Usa API_BASE_URL do config.js
+            const baseUrl =
+              typeof API_BASE_URL !== "undefined" ? API_BASE_URL : "";
+            const response = await fetch(`${baseUrl}/api/pedidos`, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -480,13 +644,7 @@
             const result = await response.json();
 
             if (result.success) {
-              return {
-                success: true,
-                pedido_id: result.pedido_id,
-                whatsapp_link_vendedor: result.whatsapp_link_vendedor,
-                whatsapp_link_cliente: result.whatsapp_link_cliente,
-                message: result.message,
-              };
+              return result;
             } else {
               throw new Error(result.error);
             }
@@ -494,8 +652,7 @@
             console.error("Erro ao enviar pedido:", error);
             return {
               success: false,
-              error:
-                "Erro ao conectar com o servidor. Verifique se o servidor Python está rodando.",
+              error: error.message || "Erro ao conectar com o servidor.",
             };
           }
         }
@@ -655,132 +812,149 @@
         }
       }
 
-      // FUNÇÕES PARA O MODAL
-      function acompanharPedido() {
-        window.location.href = "admin-pedidos.html";
+      // --- LÓGICA DOS MODAIS E CHECKOUT ---
+
+      // Variável para armazenar dados temporários entre modais
+      let dadosClienteTemp = {};
+      let dadosPedidoFinal = {};
+
+      function abrirModal(id) {
+        document.getElementById(id).classList.remove("hidden");
+        feather.replace();
       }
 
-      function voltarInicio() {
-        window.location.href = "index.html";
+      function fecharModal(id) {
+        document.getElementById(id).classList.add("hidden");
       }
 
-      // FUNÇÃO FINALIZAR COMPRA ATUALIZADA COM WHATSAPP E REDIRECIONAMENTO AUTOMÁTICO
-      async function finalizarCompra() {
+      // Etapa 1: Iniciar Checkout
+      function finalizarCompra() {
         if (carrinho.itens.length === 0) {
           alert("Seu carrinho está vazio!");
           return;
         }
+        abrirModal("modal-dados-cliente");
+      }
 
-        const dadosCliente = {
-          nome: "",
-          email: "",
-          telefone: "",
-          endereco: "",
-          observacoes: "",
+      // Etapa 2 -> 3: Coleta para Resumo
+      function irParaResumo(e) {
+        e.preventDefault();
+
+        // Coletar dados
+        dadosClienteTemp = {
+          nome: document.getElementById("cliente-nome").value,
+          telefone: document.getElementById("cliente-telefone").value,
+          endereco: document.getElementById("cliente-endereco").value,
+          observacoes: document.getElementById("cliente-observacoes").value,
+          email: "", // Opcional
         };
 
-        dadosCliente.nome = prompt("👤 Nome completo:");
-        if (!dadosCliente.nome) {
-          alert("Nome é obrigatório!");
-          return;
-        }
+        // Preencher Modal de Resumo
+        const resumoCliente = document.getElementById("resumo-cliente");
+        resumoCliente.innerHTML = `
+          <p><strong>Nome:</strong> ${dadosClienteTemp.nome}</p>
+          <p><strong>Telefone:</strong> ${dadosClienteTemp.telefone}</p>
+          <p><strong>Endereço:</strong> ${dadosClienteTemp.endereco}</p>
+          ${dadosClienteTemp.observacoes ? `<p><strong>Obs:</strong> ${dadosClienteTemp.observacoes}</p>` : ""}
+        `;
 
-        dadosCliente.email = prompt("📧 E-mail:");
-        if (!dadosCliente.email) {
-          alert("E-mail é obrigatório!");
-          return;
-        }
+        const resumoItens = document.getElementById("resumo-itens");
+        resumoItens.innerHTML = carrinho.itens
+          .map(
+            (item) => `
+          <div class="flex justify-between text-sm">
+            <span>${item.quantidade}x ${item.nome}</span>
+            <span class="font-medium">R$ ${(item.preco * item.quantidade).toFixed(2).replace(".", ",")}</span>
+          </div>
+        `,
+          )
+          .join("");
 
-        dadosCliente.telefone = prompt(
-          "📞 Telefone com DDD (apenas números, ex: 11999999999):",
-        );
-        if (!dadosCliente.telefone) {
-          alert("Telefone é obrigatório!");
-          return;
-        }
+        const total = carrinho.getTotal() + 15 - (carrinho.desconto || 0);
+        document.getElementById("resumo-total").textContent =
+          `R$ ${total.toFixed(2).replace(".", ",")}`;
 
-        // Validar telefone
-        const telefoneLimpo = dadosCliente.telefone.replace(/\D/g, "");
-        if (telefoneLimpo.length < 10 || telefoneLimpo.length > 11) {
-          alert(
-            "Por favor, insira um telefone válido com DDD (10 ou 11 dígitos).",
-          );
-          return;
-        }
+        // Trocar modais
+        fecharModal("modal-dados-cliente");
+        abrirModal("modal-resumo");
+      }
 
-        dadosCliente.endereco = prompt("🏠 Endereço completo para entrega:");
-        if (!dadosCliente.endereco) {
-          alert("Endereço é obrigatório!");
-          return;
-        }
+      function voltarParaDados() {
+        fecharModal("modal-resumo");
+        abrirModal("modal-dados-cliente");
+      }
 
-        dadosCliente.observacoes =
-          prompt("📝 Observações adicionais (opcional):") || "";
+      // Etapa 4 e 5: Envio para API
+      async function confirmarPedido() {
+        const btn = document.getElementById("btn-confirmar-final");
+        const textoOriginal = btn.innerHTML;
 
-        const confirmacao = confirm(
-          `📋 RESUMO DO PEDIDO:\n\n👤 Cliente: ${
-            dadosCliente.nome
-          }\n📧 E-mail: ${dadosCliente.email}\n📞 Telefone: ${
-            dadosCliente.telefone
-          }\n🏠 Endereço: ${dadosCliente.endereco}\n${
-            dadosCliente.observacoes
-              ? `📝 Observações: ${dadosCliente.observacoes}\n`
-              : ""
-          }\n🛒 Itens: ${carrinho.itens.length} produto(s)\n💰 Total: R$ ${(
-            carrinho.getTotal() +
-            15 -
-            (carrinho.desconto || 0)
-          ).toFixed(2)}\n\nConfirmar envio do pedido?`,
-        );
-
-        if (!confirmacao) {
-          alert("Pedido cancelado. Você pode continuar comprando!");
-          return;
-        }
-
-        const botaoFinalizar = document.querySelector(
-          'button[onclick="finalizarCompra()"]',
-        );
-        const textoOriginal = botaoFinalizar.innerHTML;
-        botaoFinalizar.innerHTML =
-          '<i data-feather="loader" class="animate-spin mr-2"></i> Processando...';
-        botaoFinalizar.disabled = true;
+        // Feedback visual
+        btn.innerHTML =
+          '<i data-feather="loader" class="animate-spin mr-2"></i> Enviando...';
+        btn.disabled = true;
         feather.replace();
 
         try {
-          const resultado = await carrinho.enviarPedido(dadosCliente);
+          const resultado = await carrinho.enviarPedido(dadosClienteTemp);
 
           if (resultado.success) {
-            // Pedido criado com sucesso - Mostrar modal de confirmação
-            const modal = document.getElementById("modal-confirmacao");
-            modal.classList.remove("hidden");
+            // Etapa 6: Limpeza e Confirmação Visual
+            dadosPedidoFinal = {
+              id: resultado.numero_pedido,
+              vendedor_telefone: resultado.vendedor_telefone,
+              itens: [...carrinho.itens],
+              total: carrinho.getTotal() + 15 - (carrinho.desconto || 0),
+            };
 
-            // Abrir WhatsApp automaticamente para o vendedor
-            if (resultado.whatsapp_link_vendedor) {
-              setTimeout(() => {
-                window.open(resultado.whatsapp_link_vendedor, "_blank");
-              }, 1000);
-            }
-
-            // Limpar carrinho
             carrinho.limpar();
+            atualizarCarrinho();
 
-            // REDIRECIONAMENTO AUTOMÁTICO APÓS 5 SEGUNDOS
-            setTimeout(() => {
-              window.location.href = "admin-pedidos.html";
-            }, 5000);
+            fecharModal("modal-resumo");
+
+            // Preencher Modal de Sucesso
+            document.getElementById("sucesso-pedido-id").textContent =
+              dadosPedidoFinal.id;
+
+            // Configurar botão do WhatsApp (Etapa 7)
+            const btnWhatsapp = document.getElementById("btn-whatsapp");
+            btnWhatsapp.onclick = function () {
+              enviarWhatsApp(dadosPedidoFinal);
+            };
+
+            abrirModal("modal-sucesso");
           } else {
             throw new Error(resultado.error);
           }
         } catch (error) {
-          alert(
-            `❌ ERRO NO PEDIDO\n\n${error.message}\n\n🔧 Verifique se o servidor está rodando:\n1. Abra o terminal/cmd\n2. Navegue até a pasta do projeto\n3. Execute: python server.py\n4. Tente novamente`,
-          );
+          alert(`Erro ao enviar pedido: ${error.message}`);
         } finally {
-          botaoFinalizar.innerHTML = textoOriginal;
-          botaoFinalizar.disabled = false;
+          btn.innerHTML = textoOriginal;
+          btn.disabled = false;
           feather.replace();
         }
+      }
+
+      // Etapa 7: Integração WhatsApp
+      function enviarWhatsApp(pedido) {
+        const quebra = "%0A";
+        let msg = `*NOVO PEDIDO ${pedido.id}*${quebra}${quebra}`;
+
+        msg += `*Cliente:* ${dadosClienteTemp.nome}${quebra}`;
+        msg += `*Telefone:* ${dadosClienteTemp.telefone}${quebra}`;
+        msg += `*Endereço:* ${dadosClienteTemp.endereco}${quebra}`;
+        if (dadosClienteTemp.observacoes)
+          msg += `*Obs:* ${dadosClienteTemp.observacoes}${quebra}`;
+
+        msg += `${quebra}*ITENS:*${quebra}`;
+        pedido.itens.forEach((item) => {
+          msg += `- ${item.quantidade}x ${item.nome}${quebra}`;
+        });
+
+        msg += `${quebra}*TOTAL: R$ ${pedido.total.toFixed(2).replace(".", ",")}*`;
+
+        const link = `https://wa.me/${pedido.vendedor_telefone}?text=${msg}`;
+        window.open(link, "_blank");
       }
 
       // Inicializar quando a página carregar

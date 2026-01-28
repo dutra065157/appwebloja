@@ -47,7 +47,7 @@ class Carrinho {
     const contadores = document.querySelectorAll("#cart-count");
     const totalItens = this.itens.reduce(
       (total, item) => total + item.quantidade,
-      0
+      0,
     );
 
     contadores.forEach((contador) => {
@@ -65,7 +65,7 @@ class Carrinho {
   getSubtotal() {
     return this.itens.reduce(
       (total, item) => total + parseFloat(item.preco) * item.quantidade,
-      0
+      0,
     );
   }
 
@@ -230,18 +230,21 @@ document.addEventListener("DOMContentLoaded", function () {
   let idleTimer;
   function resetIdleTimer() {
     clearTimeout(idleTimer);
-    idleTimer = setTimeout(() => {
-      // Verificar se está na página admin
-      if (window.location.pathname.includes("admin.html")) {
-        const token = localStorage.getItem("admin_token");
-        if (token) {
-          // Logout automático após inatividade (30 minutos)
-          localStorage.removeItem("admin_token");
-          alert("Sessão expirada por inatividade");
-          window.location.href = "login.html";
+    idleTimer = setTimeout(
+      () => {
+        // Verificar se está na página admin
+        if (window.location.pathname.includes("admin.html")) {
+          const token = localStorage.getItem("admin_token");
+          if (token) {
+            // Logout automático após inatividade (30 minutos)
+            localStorage.removeItem("admin_token");
+            alert("Sessão expirada por inatividade");
+            window.location.href = "login.html";
+          }
         }
-      }
-    }, 30 * 60 * 1000); // 30 minutos
+      },
+      30 * 60 * 1000,
+    ); // 30 minutos
   }
 
   // Iniciar timer de inatividade

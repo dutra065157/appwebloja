@@ -13,7 +13,7 @@ const app = express();
 // Configuração do WhatsApp
 const WHATSAPP_CONFIG = {
   api_url: "https://api.whatsapp.com/send",
-  phone_number: "5519987790800",
+  phone_number: "5519987790800", // <-- Coloque aqui seu número (Ex: 55 + DDD + Numero)
   default_message: "Olá! Gostaria de mais informações sobre os produtos.",
 };
 
@@ -137,6 +137,7 @@ const Produto = mongoose.model("Produto", produtoSchema);
 
 // Schema para Pedidos
 const pedidoSchema = new mongoose.Schema({
+  numero_pedido: { type: String, unique: true },
   cliente_nome: { type: String, required: true },
   cliente_email: String,
   cliente_telefone: String,
@@ -302,8 +303,12 @@ app.post("/api/pedidos", async (req, res, next) => {
         .json({ success: false, error: "Dados do cliente são obrigatórios" });
     }
 
+    // Gerar número do pedido (Ex: #123456)
+    const numeroPedido = `#${Math.floor(100000 + Math.random() * 900000)}`;
+
     // No MongoDB, podemos "embutir" os itens dentro do próprio pedido.
     const newOrder = {
+      numero_pedido: numeroPedido,
       cliente_nome: cliente.nome,
       cliente_email: cliente.email,
       cliente_telefone: cliente.telefone,
@@ -316,18 +321,13 @@ app.post("/api/pedidos", async (req, res, next) => {
     };
 
     const pedidoCriado = await new Pedido(newOrder).save();
-    const mensagem = `📦 Novo pedido #${pedidoCriado._id
-      .toString()
-      .slice(-6)} recebido na Graça Presentes!`;
-    const whatsapp_link = `https://api.whatsapp.com/send?phone=${
-      WHATSAPP_CONFIG.phone_number
-    }&text=${encodeURIComponent(mensagem)}`;
 
-    res.status(200).json({
+    res.status(201).json({
       success: true,
       message: "Pedido criado com sucesso!",
       pedido_id: pedidoCriado._id,
-      whatsapp_link: whatsapp_link,
+      numero_pedido: numeroPedido,
+      vendedor_telefone: WHATSAPP_CONFIG.phone_number,
     });
   } catch (error) {
     next(error);
