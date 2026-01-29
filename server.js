@@ -283,7 +283,7 @@ app.post(
 );
 
 // Rota para buscar todos os pedidos
-app.get("/api/pedidos", async (req, res, next) => {
+app.get("/api/pedidos", authMiddleware, async (req, res, next) => {
   try {
     const pedidos = await Pedido.find().sort({ dataCriacao: -1 });
     res.status(200).json(pedidos);
@@ -291,6 +291,52 @@ app.get("/api/pedidos", async (req, res, next) => {
     next(error);
   }
 });
+
+// Rota para apagar todos os pedidos (Protegido)
+app.delete("/api/pedidos", authMiddleware, async (req, res, next) => {
+  try {
+    await Pedido.deleteMany({});
+    res
+      .status(200)
+      .json({ success: true, message: "Todos os pedidos foram removidos." });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Função para gerar a mensagem formatada para o WhatsApp
+function gerarMensagemWhatsApp(pedido) {
+  // Formata um valor para moeda BRL
+  const formatarMoeda = (valor) => `R$ ${valor.toFixed(2).replace(".", ",")}`;
+
+  let mensagem = `*Olá! Gostaria de fazer um novo pedido!* 🥳\n\n`;
+  mensagem += `*📄 Pedido:* ${pedido.numero_pedido}\n`;
+  mensagem += `*👤 Cliente:* ${pedido.cliente_nome}\n`;
+  if (pedido.cliente_telefone) {
+    mensagem += `*📞 Telefone:* ${pedido.cliente_telefone}\n`;
+  }
+  if (pedido.endereco_entrega) {
+    mensagem += `*📍 Endereço de Entrega:*\n${pedido.endereco_entrega}\n`;
+  } else {
+    mensagem += `*📍 Forma de Entrega:* Retirada no local\n`;
+  }
+  mensagem += `\n*🛒 Itens do Pedido:*\n`;
+  mensagem += `-----------------------------------\n`;
+
+  pedido.itens.forEach((item) => {
+    // Mostra apenas nome e quantidade para simplicidade
+    mensagem += `${item.quantidade}x ${item.nome}\n`;
+  });
+
+  mensagem += `-----------------------------------\n`;
+  mensagem += `*💰 Total do Pedido: ${formatarMoeda(pedido.total)}*\n\n`;
+
+  if (pedido.observacoes) {
+    mensagem += `*📝 Observações:*\n_"${pedido.observacoes}"_\n`;
+  }
+
+  return mensagem;
+}
 
 // Rota para criar um novo pedido
 app.post("/api/pedidos", async (req, res, next) => {
@@ -307,7 +353,7 @@ app.post("/api/pedidos", async (req, res, next) => {
     const numeroPedido = `#${Math.floor(100000 + Math.random() * 900000)}`;
 
     // No MongoDB, podemos "embutir" os itens dentro do próprio pedido.
-    const newOrder = {
+    const newOrderData = {
       numero_pedido: numeroPedido,
       cliente_nome: cliente.nome,
       cliente_email: cliente.email,
@@ -320,7 +366,10 @@ app.post("/api/pedidos", async (req, res, next) => {
       // dataCriacao é definido por padrão pelo Schema
     };
 
-    const pedidoCriado = await new Pedido(newOrder).save();
+    const pedidoCriado = await new Pedido(newOrderData).save();
+
+    // Gerar a mensagem do WhatsApp com todos os detalhes
+    const mensagemWhatsApp = gerarMensagemWhatsApp(newOrderData);
 
     res.status(201).json({
       success: true,
@@ -328,6 +377,7 @@ app.post("/api/pedidos", async (req, res, next) => {
       pedido_id: pedidoCriado._id,
       numero_pedido: numeroPedido,
       vendedor_telefone: WHATSAPP_CONFIG.phone_number,
+      mensagem_whatsapp: mensagemWhatsApp, // <-- MENSAGEM PRONTA AQUI
     });
   } catch (error) {
     next(error);

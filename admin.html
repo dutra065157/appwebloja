@@ -308,6 +308,37 @@
           </div>
         </div>
       </div>
+
+      <!-- Lista de Pedidos (NOVO) -->
+      <div class="bg-white rounded-lg shadow-md p-6 mt-8">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-semibold text-gray-800">
+            🛒 Pedidos Recebidos
+          </h2>
+          <div class="flex items-center space-x-4">
+            <button
+              onclick="deletarTodosPedidos()"
+              class="text-red-500 hover:text-red-700 text-sm font-medium flex items-center transition-colors"
+              title="Apagar todos os pedidos"
+            >
+              <i data-feather="trash-2" class="w-4 h-4 mr-1"></i> Limpar Tudo
+            </button>
+            <button
+              onclick="carregarPedidos()"
+              class="text-pink-600 hover:text-pink-800 text-sm font-medium flex items-center transition-colors"
+            >
+              <i data-feather="refresh-cw" class="w-4 h-4 mr-1"></i> Atualizar
+              Lista
+            </button>
+          </div>
+        </div>
+
+        <div id="listaPedidos" class="space-y-4">
+          <div class="text-center py-8 text-gray-500">
+            <p>Carregando pedidos...</p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <style>
@@ -662,6 +693,7 @@
                                     <img src="${imagemSrc}" 
                                          class="w-full h-full object-cover rounded-lg shadow-sm"
                                          loading="lazy"
+                                         crossorigin="anonymous"
                                          alt="${produto.nome}">
                                 </div>`
                                 : `<div class="w-20 h-20 ${
@@ -746,6 +778,154 @@
         }
       }
 
+      // Carregar pedidos
+      async function carregarPedidos() {
+        const lista = document.getElementById("listaPedidos");
+
+        // Estado de loading
+        lista.innerHTML = `
+            <div class="text-center py-8 text-gray-500">
+                <div class="animate-spin inline-block w-8 h-8 border-4 border-current border-t-transparent text-pink-600 rounded-full mb-2" role="status" aria-label="loading"></div>
+                <p>Buscando pedidos...</p>
+            </div>`;
+
+        try {
+          const baseUrl =
+            typeof API_BASE_URL !== "undefined" ? API_BASE_URL : "";
+          const url = `${baseUrl}/api/pedidos`;
+
+          const response = await fetch(url, {
+            headers: {
+              Authorization: `Bearer ${adminToken}`,
+            },
+          });
+
+          if (!response.ok) {
+            if (response.status === 401) return; // Auth error handled globally usually
+            throw new Error("Falha ao buscar pedidos");
+          }
+
+          const pedidos = await response.json();
+
+          if (pedidos.length === 0) {
+            lista.innerHTML = `
+                <div class="text-center py-8 text-gray-500">
+                    <div class="text-4xl mb-2">📭</div>
+                    <p>Nenhum pedido recebido ainda</p>
+                </div>
+            `;
+            return;
+          }
+
+          lista.innerHTML = pedidos
+            .map((pedido) => {
+              const data = new Date(pedido.dataCriacao).toLocaleString("pt-BR");
+              const total =
+                typeof pedido.total === "number"
+                  ? pedido.total.toFixed(2).replace(".", ",")
+                  : "0,00";
+
+              // Formatar itens
+              const itensHtml = Array.isArray(pedido.itens)
+                ? pedido.itens
+                    .map(
+                      (item) =>
+                        `<li class="text-sm text-gray-600 flex justify-between border-b border-gray-50 last:border-0 py-1">
+                    <span><span class="font-bold text-pink-600">${item.quantidade}x</span> ${item.nome}</span>
+                 </li>`,
+                    )
+                    .join("")
+                : '<li class="text-sm text-gray-500">Sem itens</li>';
+
+              return `
+                <div class="border border-gray-200 rounded-lg p-5 hover:shadow-md transition bg-gray-50">
+                    <div class="flex flex-col md:flex-row justify-between gap-6">
+                        <!-- Info Principal -->
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="bg-pink-100 text-pink-800 text-xs font-bold px-3 py-1 rounded-full">${pedido.numero_pedido || "#???"}</span>
+                                <span class="text-xs text-gray-500 flex items-center bg-white px-2 py-1 rounded border border-gray-100">
+                                    <i data-feather="calendar" class="w-3 h-3 mr-1"></i> ${data}
+                                </span>
+                            </div>
+                            <h3 class="font-bold text-lg text-gray-800 mb-1">${pedido.cliente_nome}</h3>
+                            <div class="text-sm text-gray-600 space-y-1">
+                                <p class="flex items-center"><i data-feather="phone" class="w-3 h-3 mr-2 text-gray-400"></i> ${pedido.cliente_telefone || "Não informado"}</p>
+                                <p class="flex items-center"><i data-feather="map-pin" class="w-3 h-3 mr-2 text-gray-400"></i> ${pedido.endereco_entrega || "Retirada"}</p>
+                            </div>
+                            ${pedido.observacoes ? `<div class="mt-3 text-sm text-amber-700 bg-amber-50 p-3 rounded-lg border border-amber-100"><span class="font-bold">Obs:</span> ${pedido.observacoes}</div>` : ""}
+                        </div>
+
+                        <!-- Itens e Total -->
+                        <div class="flex-1 md:max-w-md bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
+                            <h4 class="font-semibold text-xs text-gray-400 uppercase tracking-wider mb-3">Resumo do Pedido</h4>
+                            <ul class="space-y-1 mb-4 max-h-40 overflow-y-auto pr-2">
+                                ${itensHtml}
+                            </ul>
+                            <div class="flex justify-between items-center border-t border-gray-100 pt-3 mt-auto">
+                                <span class="font-bold text-gray-700">Total Final</span>
+                                <span class="font-bold text-xl text-green-600">R$ ${total}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            })
+            .join("");
+
+          feather.replace();
+        } catch (error) {
+          console.error("Erro ao carregar pedidos:", error);
+          lista.innerHTML = `<div class="text-center py-4 text-red-500 bg-red-50 rounded-lg border border-red-100">
+            <p class="font-bold">Erro ao carregar pedidos</p>
+            <p class="text-sm">${error.message}</p>
+          </div>`;
+        }
+      }
+
+      // Função para deletar todos os pedidos com senha de segurança
+      async function deletarTodosPedidos() {
+        const senha = prompt(
+          "⚠️ PERIGO: Isso apagará TODOS os pedidos permanentemente!\n\nPara confirmar, digite a senha de administrador:",
+        );
+
+        // Senha de segurança (mesma do login.html)
+        const SENHA_ADMIN = "graca123";
+
+        if (senha === SENHA_ADMIN) {
+          if (
+            !confirm("Tem certeza absoluta? Essa ação não pode ser desfeita.")
+          )
+            return;
+
+          try {
+            const baseUrl =
+              typeof API_BASE_URL !== "undefined" ? API_BASE_URL : "";
+            const url = `${baseUrl}/api/pedidos`;
+
+            const response = await fetch(url, {
+              method: "DELETE",
+              headers: {
+                Authorization: `Bearer ${adminToken}`,
+              },
+            });
+
+            if (!response.ok) throw new Error("Falha ao deletar pedidos");
+
+            mostrarFeedback(
+              "✅ Histórico de pedidos limpo com sucesso!",
+              "success",
+            );
+            carregarPedidos();
+          } catch (error) {
+            console.error("Erro ao limpar pedidos:", error);
+            mostrarFeedback("❌ Erro ao limpar pedidos", "error");
+          }
+        } else if (senha !== null) {
+          alert("⛔ Senha incorreta! Ação cancelada.");
+        }
+      }
+
       async function removerProduto(id) {
         if (confirm("Tem certeza que deseja remover este produto?")) {
           try {
@@ -790,6 +970,7 @@
 
       // Carregar produtos ao iniciar
       carregarProdutos();
+      carregarPedidos(); // Iniciar carregamento de pedidos
 
       // Adicionar botão de logout também no mobile se necessário
       document.addEventListener("DOMContentLoaded", function () {

@@ -42,17 +42,20 @@ O projeto foi desenvolvido utilizando as seguintes tecnologias:
 ### 🛒 Para o Cliente
 
 - **Catálogo Visual:** Visualização de produtos com filtros por categoria (Flores, Doces, Pelúcias, etc.).
-- **Carrinho de Compras:** Adição/remoção de itens com cálculo automático de total e descontos.
+- **Carrinho de Compras:** Adição/remoção de itens com cálculo automático de total.
 - **Fluxo de Checkout Completo:** Finalização de compra em etapas (Dados, Resumo e Sucesso) via Modais interativos.
-- **Integração WhatsApp:** Geração automática de número de pedido único (#ID) e envio da mensagem formatada.
+- **Integração WhatsApp Aprimorada:** Geração de número de pedido único (#ID) e envio de uma mensagem **pré-formatada pelo servidor**, pronta para o cliente apenas clicar e enviar.
 - **Responsividade:** Layout adaptado para Celulares, Tablets e Desktop com ajustes visuais dinâmicos.
 
 ### ⚙️ Painel Administrativo (Admin)
 
 - **Autenticação:** Sistema de login para proteger as rotas administrativas.
-- **CRUD de Produtos:** Criar, Ler, Atualizar e Deletar produtos.
+- **CRUD de Produtos:** Criar, Ler e Deletar produtos.
 - **Upload de Imagens:** Integração com Cloudinary para hospedagem de fotos dos produtos.
 - **Gestão de Destaques:** Marcar produtos como "Novo", "Mais Vendido" ou aplicar descontos.
+- **Dashboard de Pedidos:** Visualização de todos os pedidos recebidos com informações detalhadas do cliente e dos itens.
+- **Gerenciamento de Pedidos:** Funcionalidade para limpar todo o histórico de pedidos com confirmação por senha.
+- **Segurança de Sessão:** Logout automático por inatividade para proteger o painel.
 
 ---
 
