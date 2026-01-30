@@ -937,23 +937,22 @@
 
       // Etapa 7: Integração WhatsApp
       function enviarWhatsApp(pedido) {
-        const quebra = "%0A";
-        let msg = `*NOVO PEDIDO ${pedido.id}*${quebra}${quebra}`;
+        let msg = `*NOVO PEDIDO ${pedido.id}*\n\n`;
 
-        msg += `*Cliente:* ${dadosClienteTemp.nome}${quebra}`;
-        msg += `*Telefone:* ${dadosClienteTemp.telefone}${quebra}`;
-        msg += `*Endereço:* ${dadosClienteTemp.endereco}${quebra}`;
+        msg += `*Cliente:* ${dadosClienteTemp.nome}\n`;
+        msg += `*Telefone:* ${dadosClienteTemp.telefone}\n`;
+        msg += `*Endereço:* ${dadosClienteTemp.endereco}\n`;
         if (dadosClienteTemp.observacoes)
-          msg += `*Obs:* ${dadosClienteTemp.observacoes}${quebra}`;
+          msg += `*Obs:* ${dadosClienteTemp.observacoes}\n`;
 
-        msg += `${quebra}*ITENS:*${quebra}`;
+        msg += `\n*ITENS:*\n`;
         pedido.itens.forEach((item) => {
-          msg += `- ${item.quantidade}x ${item.nome}${quebra}`;
+          msg += `- ${item.quantidade}x ${item.nome}\n`;
         });
 
-        msg += `${quebra}*TOTAL: R$ ${pedido.total.toFixed(2).replace(".", ",")}*`;
+        msg += `\n*TOTAL: R$ ${pedido.total.toFixed(2).replace(".", ",")}*`;
 
-        const link = `https://wa.me/${pedido.vendedor_telefone}?text=${msg}`;
+        const link = `https://wa.me/${pedido.vendedor_telefone}?text=${encodeURIComponent(msg)}`;
         window.open(link, "_blank");
       }
 
