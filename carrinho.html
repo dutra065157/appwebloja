@@ -937,20 +937,36 @@
 
       // Etapa 7: Integração WhatsApp
       function enviarWhatsApp(pedido) {
-        let msg = `*NOVO PEDIDO ${pedido.id}*\n\n`;
-
-        msg += `*Cliente:* ${dadosClienteTemp.nome}\n`;
-        msg += `*Telefone:* ${dadosClienteTemp.telefone}\n`;
-        msg += `*Endereço:* ${dadosClienteTemp.endereco}\n`;
-        if (dadosClienteTemp.observacoes)
-          msg += `*Obs:* ${dadosClienteTemp.observacoes}\n`;
-
-        msg += `\n*ITENS:*\n`;
-        pedido.itens.forEach((item) => {
-          msg += `- ${item.quantidade}x ${item.nome}\n`;
+        const agora = new Date();
+        const dataHora = agora.toLocaleString("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
         });
 
-        msg += `\n*TOTAL: R$ ${pedido.total.toFixed(2).replace(".", ",")}*`;
+        let msg = `✨ *NOVO PEDIDO REALIZADO* ✨\n\n`;
+        msg += `🆔 *Pedido:* ${pedido.id}\n`;
+        msg += `📅 *Data:* ${dataHora}\n`;
+        msg += `------------------------------\n`;
+
+        msg += `👤 *DADOS DO CLIENTE*\n`;
+        msg += `Nome: ${dadosClienteTemp.nome}\n`;
+        msg += `📞 Telefone: ${dadosClienteTemp.telefone}\n`;
+        msg += `📍 Endereço: ${dadosClienteTemp.endereco}\n`;
+        if (dadosClienteTemp.observacoes)
+          msg += `📝 *Obs:* ${dadosClienteTemp.observacoes}\n`;
+
+        msg += `\n🛒 *ITENS DO PEDIDO*\n`;
+        pedido.itens.forEach((item) => {
+          msg += `▪️ ${item.quantidade}x ${item.nome}\n`;
+        });
+
+        msg += `------------------------------\n`;
+        msg += `💰 *TOTAL: R$ ${pedido.total.toFixed(2).replace(".", ",")}*\n`;
+        msg += `------------------------------\n`;
+        msg += `🚀 *Aguardando confirmação!*`;
 
         const link = `https://wa.me/${pedido.vendedor_telefone}?text=${encodeURIComponent(msg)}`;
         window.open(link, "_blank");
