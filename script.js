@@ -58,7 +58,7 @@ class Carrinho {
     const contadores = document.querySelectorAll("#cart-count");
     const totalItens = this.itens.reduce(
       (total, item) => total + item.quantidade,
-      0
+      0,
     );
 
     contadores.forEach((contador) => {
@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", function () {
 function inicializar() {
   console.log(
     "🔌 Conectando à API em:",
-    API_BASE_URL || "Mesmo domínio (Produção)"
+    API_BASE_URL || "Mesmo domínio (Produção)",
   );
   carregarProdutos();
   inicializarMobileMenu();
@@ -107,7 +107,7 @@ function inicializarMobileMenu() {
       if (icon) {
         icon.setAttribute(
           "data-feather",
-          mobileMenu.classList.contains("hidden") ? "menu" : "x"
+          mobileMenu.classList.contains("hidden") ? "menu" : "x",
         );
         feather.replace();
       }
@@ -205,8 +205,8 @@ function renderizarProdutos(produtosParaRenderizar) {
         imagemSrc = produto.imagem_url.startsWith("http")
           ? produto.imagem_url
           : API_BASE_URL
-          ? `${API_BASE_URL}${produto.imagem_url}`
-          : produto.imagem_url;
+            ? `${API_BASE_URL}${produto.imagem_url}`
+            : produto.imagem_url;
       }
 
       // Determinar badges (MESMA LÓGICA DO INDEX.HTML)
@@ -253,8 +253,8 @@ function renderizarProdutos(produtosParaRenderizar) {
                           temImagem
                             ? `<img src="${imagemSrc}" 
                                   alt="${produto.nome}" 
-                                  class="w-full h-56 md:h-64 object-contain bg-white group-hover:scale-110 transition-transform duration-500 product-image">`
-                            : `<div class="w-full h-56 md:h-64 ${
+                                  class="w-full h-64 md:h-80 object-contain bg-white group-hover:scale-110 transition-transform duration-500 product-image">`
+                            : `<div class="w-full h-64 md:h-80 ${
                                 produto.cor_gradiente ||
                                 "from-gray-400 to-gray-600"
                               } bg-gradient-to-br flex items-center justify-center group-hover:scale-105 transition-transform duration-500">
@@ -279,8 +279,8 @@ function renderizarProdutos(produtosParaRenderizar) {
                                 ${produto.nome}
                             </h3>
                             <span class="bg-${produto.cor || "gray"}-100 text-${
-        produto.cor || "gray"
-      }-600 text-xs px-2 py-1 rounded-full whitespace-nowrap flex-shrink-0">
+                              produto.cor || "gray"
+                            }-600 text-xs px-2 py-1 rounded-full whitespace-nowrap flex-shrink-0">
                                 ${produto.categoria}
                             </span>
                         </div>
@@ -305,7 +305,7 @@ function renderizarProdutos(produtosParaRenderizar) {
                                     precoFinal
                                     ? `<span class="text-xs text-gray-400 line-through">
                                         De: R$ ${parseFloat(
-                                          produto.preco_original
+                                          produto.preco_original,
                                         )
                                           .toFixed(2)
                                           .replace(".", ",")}
@@ -423,8 +423,8 @@ function mostrarNotificacao(mensagem, tipo) {
     tipo === "success"
       ? "bg-green-500"
       : tipo === "error"
-      ? "bg-red-500"
-      : "bg-blue-500"
+        ? "bg-red-500"
+        : "bg-blue-500"
   } text-white`;
   notificacao.innerHTML = `
                 <div class="flex items-center">
@@ -433,8 +433,8 @@ function mostrarNotificacao(mensagem, tipo) {
                           tipo === "success"
                             ? "check"
                             : tipo === "error"
-                            ? "alert-triangle"
-                            : "info"
+                              ? "alert-triangle"
+                              : "info"
                         }" class="w-5 h-5"></i>
                     </div>
                     <div>

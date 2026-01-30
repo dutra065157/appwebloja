@@ -418,7 +418,7 @@ function renderizarProdutosDestaque(produtos) {
                      style="animation-delay: ${index * 100}ms">
                     <div class="relative overflow-hidden">
                         <!-- Imagem do produto -->
-                        <div class="w-full h-56 md:h-64 overflow-hidden bg-gray-100">
+                        <div class="w-full h-64 md:h-80 overflow-hidden bg-gray-100">
                             ${
                               temImagem
                                 ? `<img src="${imagemSrc}" 
