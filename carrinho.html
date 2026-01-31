@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script src="config.js"></script>
-    <link rel="stylesheet" href="styl/style.css" />
   </head>
   <body class="text-gray-800">
     <!-- Header -->
@@ -684,54 +683,63 @@
 
         // Atualizar itens do carrinho
         container.innerHTML = itens
-          .map(
-            (item, index) => `
-                <div class="cart-item border-b border-gray-100 p-4 flex flex-col sm:flex-row transition">
+          .map((item, index) => {
+            // Lógica para exibir imagem ou ícone
+            let imagemHtml;
+            if (item.imagem_url) {
+              let src = item.imagem_url;
+              // Ajuste de URL se necessário (para caminhos relativos)
+              if (!src.startsWith("http") && !src.startsWith("data:")) {
+                const baseUrl =
+                  typeof API_BASE_URL !== "undefined" ? API_BASE_URL : "";
+                src = src.startsWith("/")
+                  ? `${baseUrl}${src}`
+                  : `${baseUrl}/${src}`;
+              }
+              imagemHtml = `<img src="${src}" alt="${item.nome}" class="w-full h-full object-cover rounded-lg shadow-sm">`;
+            } else {
+              const gradiente =
+                item.cor_gradiente ||
+                item.corGradiente ||
+                "from-pink-200 to-rose-300";
+              const icone = item.icone || "gift";
+              imagemHtml = `
+                        <div class="w-full h-full bg-gradient-to-br ${gradiente} rounded-lg flex items-center justify-center">
+                            <i data-feather="${icone}" class="w-8 h-8 text-white"></i>
+                        </div>`;
+            }
+
+            return `
+                <div class="cart-item border-b border-gray-100 p-4 flex flex-col sm:flex-row transition hover:bg-gray-50">
                     <div class="w-full sm:w-32 h-32 flex-shrink-0 mb-4 sm:mb-0">
-                        <div class="w-full h-full bg-gradient-to-br ${
-                          item.corGradiente
-                        } rounded-lg flex items-center justify-center">
-                            <i data-feather="${
-                              item.icone
-                            }" class="w-8 h-8 text-white"></i>
-                        </div>
+                        ${imagemHtml}
                     </div>
                     <div class="flex-grow sm:ml-4">
                         <div class="flex justify-between">
                             <div>
-                                <h3 class="font-semibold text-lg">${
-                                  item.nome
-                                }</h3>
-                                <p class="text-gray-500 text-sm">${
-                                  item.descricao
-                                }</p>
+                                <h3 class="font-semibold text-lg text-gray-800">${item.nome}</h3>
+                                <p class="text-gray-500 text-sm line-clamp-2">${item.descricao || ""}</p>
                             </div>
-                            <button class="text-gray-400 hover:text-gray-600" onclick="removerItem(${index})">
-                                <i data-feather="trash-2"></i>
+                            <button class="text-gray-400 hover:text-red-500 transition p-2" onclick="removerItem(${index})" aria-label="Remover item">
+                                <i data-feather="trash-2" class="w-5 h-5"></i>
                             </button>
                         </div>
                         <div class="mt-4 flex flex-col sm:flex-row sm:items-center justify-between">
                             <div class="flex items-center mb-4 sm:mb-0">
-                                <button class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-pink-50" onclick="alterarQuantidade(${index}, -1)">
+                                <button class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-pink-50 text-gray-600 transition" onclick="alterarQuantidade(${index}, -1)">
                                     <i data-feather="minus" class="w-4 h-4"></i>
                                 </button>
-                                <span class="mx-4 font-medium">${
-                                  item.quantidade
-                                }</span>
-                                <button class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-pink-50" onclick="alterarQuantidade(${index}, 1)">
+                                <span class="mx-4 font-medium text-gray-800 w-6 text-center">${item.quantidade}</span>
+                                <button class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-pink-50 text-gray-600 transition" onclick="alterarQuantidade(${index}, 1)">
                                     <i data-feather="plus" class="w-4 h-4"></i>
                                 </button>
                             </div>
-                            <span class="font-bold text-lg text-pink-500">R$ ${(
-                              item.preco * item.quantidade
-                            )
-                              .toFixed(2)
-                              .replace(".", ",")}</span>
+                            <span class="font-bold text-lg text-pink-600">R$ ${(item.preco * item.quantidade).toFixed(2).replace(".", ",")}</span>
                         </div>
                     </div>
                 </div>
-            `,
-          )
+            `;
+          })
           .join("");
 
         // Atualizar resumo do pedido

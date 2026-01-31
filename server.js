@@ -489,7 +489,7 @@ function getCategoryStyles(categoria) {
     },
     Doces: {
       cor: "yellow",
-      icone: "box",
+      icone: "coffee",
       cor_gradiente: "from-yellow-200 to-amber-300",
     },
     Pelúcias: {
@@ -504,7 +504,7 @@ function getCategoryStyles(categoria) {
     },
     Kits: {
       cor: "amber",
-      icone: "package",
+      icone: "box",
       cor_gradiente: "from-amber-200 to-orange-300",
     },
     Decoração: {

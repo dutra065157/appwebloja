@@ -417,25 +417,21 @@ function renderizarProdutosDestaque(produtos) {
                 <div class="product-card group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100 animate-fade-in-up"
                      style="animation-delay: ${index * 100}ms">
                     <div class="relative overflow-hidden">
-                        <!-- Imagem do produto -->
-                        <div class="w-full h-64 md:h-80 overflow-hidden bg-gray-100">
-                            ${
-                              temImagem
-                                ? `<img src="${imagemSrc}" 
-                                      alt="${produto.nome}" 
-                                      class="w-full h-full object-contain bg-white group-hover:scale-110 transition-transform duration-500"
-                                      loading="lazy"
-                                      onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIGZpbGw9IiNGM0Y0RjYiLz48cGF0aCBkPSJNMjAwIDE1MEMyMzIgMTUwIDI1OCAxNzYgMjU4IDIwOEMyNTggMjQwIDIzMiAyNjYgMjAwIDI2NkMxNjggMjY2IDE0MiAyNDAgMTQyIDIwOEMxNDIgMTc2IDE2OCAxNTAgMjAwIDE1MFoiIGZpbGw9IiNEOEQ5REIiLz48cGF0aCBkPSJNMTUwIDI1MEgyNTBDMjY2LjU2OCAyNTAgMjgwIDI2My40MzIgMjgwIDI4MFYzMjBDMjgwIDMzNi41NjggMjY2LjU2OCAzNTAgMjUwIDM1MEgxNTBDMTMzLjQzMiAzNTAgMTIwIDMzNi41NjggMTIwIDMyMFYyODBDMTIwIDI2My40MzIgMTMzLjQzMiAyNTAgMTUwIDI1MFoiIGZpbGw9IiNEOEQ5REIiLz48L3N2Zz4=';">`
-                                : `<div class="w-full h-full ${
-                                    produto.cor_gradiente ||
-                                    "from-gray-400 to-gray-600"
-                                  } bg-gradient-to-br flex items-center justify-center group-hover:scale-105 transition-transform duration-500">
-                                    <i data-feather="${
-                                      produto.icone || "gift"
-                                    }" class="w-16 h-16 text-white opacity-75"></i>
-                                </div>`
-                            }
-                        </div>
+                        <!-- Imagem do produto ou placeholder com gradiente -->
+                        ${
+                          temImagem
+                            ? `<img src="${imagemSrc}" 
+                                  alt="${produto.nome}" 
+                                  class="w-full h-64 md:h-80 object-contain bg-white group-hover:scale-110 transition-transform duration-500 product-image">`
+                            : `<div class="w-full h-64 md:h-80 ${
+                                produto.cor_gradiente ||
+                                "from-gray-400 to-gray-600"
+                              } bg-gradient-to-br flex items-center justify-center group-hover:scale-105 transition-transform duration-500">
+                                <i data-feather="${
+                                  produto.icone || "gift"
+                                }" class="w-16 h-16 text-white opacity-75"></i>
+                            </div>`
+                        }
                         
                         <!-- Badges Container -->
                         <div class="absolute top-3 right-3 flex flex-col space-y-2">
@@ -446,7 +442,7 @@ function renderizarProdutosDestaque(produtos) {
                         <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300"></div>
                     </div>
                     
-                    <div class="p-4">
+                    <div class="p-5">
                         <div class="flex justify-between items-start mb-3">
                             <h3 class="font-bold text-lg text-gray-800 group-hover:text-pink-600 transition-colors line-clamp-2 flex-1 mr-2">
                                 ${produto.nome}
