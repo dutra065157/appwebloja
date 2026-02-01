@@ -494,7 +494,7 @@ app.listen(PORT, () => {
 // Função auxiliar para estilos de categoria
 function getCategoryStyles(categoria) {
   const styles = {
-    Flores: {
+    Perfumes: {
       cor: "pink",
       icone: "sun",
       cor_gradiente: "from-pink-200 to-rose-300",
