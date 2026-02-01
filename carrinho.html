@@ -696,7 +696,7 @@
                   ? `${baseUrl}${src}`
                   : `${baseUrl}/${src}`;
               }
-              imagemHtml = `<img src="${src}" alt="${item.nome}" class="w-full h-full object-cover rounded-lg shadow-sm">`;
+              imagemHtml = `<img src="${src}" alt="${item.nome}" class="w-full h-full object-contain bg-white rounded-lg shadow-sm">`;
             } else {
               const gradiente =
                 item.cor_gradiente ||
@@ -711,7 +711,7 @@
 
             return `
                 <div class="cart-item border-b border-gray-100 p-4 flex flex-col sm:flex-row transition hover:bg-gray-50">
-                    <div class="w-full sm:w-32 h-32 flex-shrink-0 mb-4 sm:mb-0">
+                    <div class="w-32 h-32 flex-shrink-0 mb-4 sm:mb-0 mx-auto sm:mx-0">
                         ${imagemHtml}
                     </div>
                     <div class="flex-grow sm:ml-4">
