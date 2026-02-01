@@ -349,8 +349,20 @@ app.post("/api/pedidos", async (req, res, next) => {
         .json({ success: false, error: "Dados do cliente são obrigatórios" });
     }
 
-    // Gerar número do pedido (Ex: #123456)
-    const numeroPedido = `#${Math.floor(100000 + Math.random() * 900000)}`;
+    // Gerar número do pedido sequencial (1, 2, 3...)
+    const ultimoPedido = await Pedido.findOne().sort({ dataCriacao: -1 });
+    let sequencia = 1;
+
+    if (ultimoPedido && ultimoPedido.numero_pedido) {
+      const ultimoNumero = parseInt(
+        ultimoPedido.numero_pedido.replace(/\D/g, ""),
+        10,
+      );
+      if (!isNaN(ultimoNumero)) sequencia = ultimoNumero + 1;
+    }
+
+    const numeroPedido = sequencia.toString();
+    console.log(`🔢 Novo Pedido Gerado: #${numeroPedido}`);
 
     // No MongoDB, podemos "embutir" os itens dentro do próprio pedido.
     const newOrderData = {
