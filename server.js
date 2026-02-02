@@ -524,10 +524,10 @@ function getCategoryStyles(categoria) {
       icone: "home",
       cor_gradiente: "from-blue-200 to-cyan-300",
     },
-    Joias: {
-      cor: "green",
-      icone: "award",
-      cor_gradiente: "from-green-200 to-emerald-300",
+    Maquiagem: {
+      cor: "red",
+      icone: "smile",
+      cor_gradiente: "from-red-200 to-pink-300",
     },
     Românticos: {
       cor: "rose",

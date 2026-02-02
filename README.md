@@ -42,6 +42,7 @@ O projeto foi desenvolvido utilizando as seguintes tecnologias:
 ### 🛒 Para o Cliente
 
 - **Catálogo Visual:** Visualização de produtos com filtros por categoria (Flores, Doces, Pelúcias, etc.).
+- **Catálogo Visual:** Visualização de produtos com filtros por categoria (Perfumes, Doces, Pelúcias, etc.).
 - **Carrinho de Compras:** Adição/remoção de itens com cálculo automático de total.
 - **Fluxo de Checkout Completo:** Finalização de compra em etapas (Dados, Resumo e Sucesso) via Modais interativos.
 - **Integração WhatsApp Aprimorada:** Geração de número de pedido único (#ID) e envio de uma mensagem **pré-formatada pelo servidor**, pronta para o cliente apenas clicar e enviar.
