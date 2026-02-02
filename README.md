@@ -12,7 +12,7 @@ O projeto conta com um **Painel Administrativo** seguro para cadastro de produto
 ### 🌐 Links do Projeto
 
 - **Frontend (Aplicação):** [Acessar Loja Online](https://dutra065157.github.io/appwebloja/)
-- **Backend (API):** [Documentação/API](https://appwebloja.onrender.com)
+- **Backend (API):** [Hospedado no Render](https://appwebloja.onrender.com)
 
 ---
 
@@ -27,6 +27,7 @@ O projeto foi desenvolvido utilizando as seguintes tecnologias:
 - ![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=flat&logo=mongodb&logoColor=white) **MongoDB & Mongoose**: Banco de dados NoSQL e modelagem de dados.
 - ![Cloudinary](https://img.shields.io/badge/Cloudinary-3448C5?style=flat&logo=cloudinary&logoColor=white) **Cloudinary**: Armazenamento e otimização de imagens na nuvem.
 - **Multer**: Middleware para upload de arquivos.
+- ![Render](https://img.shields.io/badge/Render-%2346E3B7.svg?style=flat&logo=render&logoColor=white) **Render**: Plataforma de nuvem onde o Backend está hospedado.
 
 ### Frontend (Interface)
 
@@ -60,60 +61,6 @@ O projeto foi desenvolvido utilizando as seguintes tecnologias:
 
 ---
 
-## 🚀 Como Rodar o Projeto Localmente
-
-### Pré-requisitos
-
-Você precisa ter instalado em sua máquina:
-
-- [Node.js](https://nodejs.org/) (v18 ou superior)
-- [Git](https://git-scm.com/)
-
-### Passo a Passo
-
-1. **Clone o repositório**
-
-   ```bash
-   git clone https://github.com/dutra065157/appwebloja.git
-   cd appwebloja
-   ```
-
-2. **Instale as dependências**
-
-   ```bash
-   npm install
-   ```
-
-   _Nota: Se houver erro de dependência, use `npm install --legacy-peer-deps`_
-
-3. **Configure as Variáveis de Ambiente**
-   Crie um arquivo `.env` na raiz do projeto e preencha com suas credenciais (não compartilhe este arquivo):
-
-   ```env
-   PORT=8000
-   MONGODB_URI=sua_string_de_conexao_mongodb
-
-   # Configuração Cloudinary
-   CLOUDINARY_CLOUD_NAME=seu_cloud_name
-   CLOUDINARY_API_KEY=sua_api_key
-   CLOUDINARY_API_SECRET=sua_api_secret
-
-   # Opcional (para deploy)
-   RENDER_EXTERNAL_URL=https://appwebloja.onrender.com
-   ```
-
-4. **Inicie o Servidor**
-
-   ```bash
-   node server.js
-   ```
-
-5. **Acesse a aplicação**
-   - O backend rodará em: `http://localhost:8000`
-   - Abra o arquivo `index.html` no seu navegador ou use uma extensão como "Live Server".
-
----
-
 ## 📂 Estrutura do Projeto
 
 ```
@@ -134,9 +81,9 @@ appwebloja/
 
 ## 👨‍💻 Autor
 
-Desenvolvido por **Renato Santos** (e/ou seu nome completo).
+Desenvolvido por **Renato Santos**.
 
-[!LinkedIn](https://www.linkedin.com/in/seu-linkedin)
+[!LinkedIn](www.linkedin.com/in/renato-dutra-dos-santos-76176731b)
 [!GitHub](https://github.com/dutra065157)
 
 ---
