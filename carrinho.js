@@ -3,6 +3,7 @@ class Carrinho {
     this.itens = JSON.parse(localStorage.getItem("carrinho")) || [];
     this.desconto = JSON.parse(localStorage.getItem("carrinho_desconto")) || 0;
     this.adminToken = localStorage.getItem("admin_token"); // Armazenar token
+    this.valorFrete = 20.0; // DEFINA AQUI O VALOR DO FRETE (Mude este valor para alterar em todo o site)
     this.atualizarContador();
   }
 
@@ -69,9 +70,10 @@ class Carrinho {
     );
   }
 
-  getTotalFinal(frete = 0) {
+  getTotalFinal() {
+    // Agora usa o this.valorFrete definido no construtor, ignorando valores passados externamente
     const subtotal = this.getSubtotal();
-    return subtotal + frete - this.desconto;
+    return subtotal + this.valorFrete - this.desconto;
   }
 
   aplicarDesconto(valor, tipo = "percentual") {
@@ -111,7 +113,7 @@ class Carrinho {
           quantidade: item.quantidade,
           precoUnitario: item.preco,
         })),
-        total: this.getTotalFinal(15.0), // Assumindo frete fixo
+        total: this.getTotalFinal(),
       };
 
       const response = await fetch(`${API_BASE_URL}/api/pedidos`, {

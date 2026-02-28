@@ -646,6 +646,20 @@
         }, 4000);
       }
 
+      // NOVO: Função para transformar URLs em links clicáveis na descrição
+      function formatarDescricaoComLinks(texto) {
+        if (!texto) {
+          return "Sem descrição";
+        }
+        // Regex para encontrar URLs
+        const urlRegex = /(https?:\/\/[^\s"'<>`]+)/g;
+        return texto.replace(
+          urlRegex,
+          // Adicionado event.stopPropagation() para evitar conflitos no painel admin
+          '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-pink-500 hover:underline" onclick="event.stopPropagation();">$1</a>',
+        );
+      }
+
       // Carregar produtos
       async function carregarProdutos() {
         const lista = document.getElementById("listaProdutos");
@@ -711,9 +725,7 @@
                                         <h3 class="font-semibold text-lg text-gray-800">${
                                           produto.nome
                                         }</h3>
-                                        <p class="text-gray-600 text-sm mt-1 line-clamp-2">${
-                                          produto.descricao || "Sem descrição"
-                                        }</p>
+                                        <p class="text-gray-600 text-sm mt-1 line-clamp-2">${formatarDescricaoComLinks(produto.descricao)}</p>
                                     </div>
                                     <button onclick="removerProduto('${
                                       produto.id

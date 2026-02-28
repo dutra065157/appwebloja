@@ -253,6 +253,19 @@ function mostrarNotificacao(mensagem, tipo) {
   }, 4000);
 }
 
+// NOVO: Função para transformar URLs em links clicáveis na descrição
+function formatarDescricaoComLinks(texto) {
+  if (!texto) {
+    return "Produto especial da Graça Presentes";
+  }
+  // Regex para encontrar URLs
+  const urlRegex = /(https?:\/\/[^\s"'<>`]+)/g;
+  return texto.replace(
+    urlRegex,
+    '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-pink-500 hover:underline">$1</a>',
+  );
+}
+
 // Carregar produtos em destaque
 async function carregarProdutosEmDestaque(forcarCache = false) {
   const container = document.getElementById("featured-products");
@@ -455,10 +468,7 @@ function renderizarProdutosDestaque(produtos) {
                         </div>
                         
                         <p class="text-gray-500 text-sm mb-4 line-clamp-2 leading-relaxed">
-                            ${
-                              produto.descricao ||
-                              "Produto especial da Graça Presentes"
-                            }
+                            ${formatarDescricaoComLinks(produto.descricao)}
                         </p>
                         
                         <div class="flex justify-between items-center">

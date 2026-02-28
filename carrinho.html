@@ -519,6 +519,7 @@
         constructor() {
           this.itens = JSON.parse(localStorage.getItem("carrinho")) || [];
           this.desconto = 0;
+          this.valorFrete = 0; // DEFINA AQUI O VALOR DO FRETE
           this.atualizarContador();
         }
 
@@ -600,7 +601,7 @@
 
         getTotalComDesconto() {
           const subtotal = this.getTotal();
-          return subtotal + 15 - (this.desconto || 0);
+          return subtotal + this.valorFrete - (this.desconto || 0);
         }
 
         salvar() {
@@ -660,6 +661,19 @@
       // Inicializar carrinho
       const carrinho = new Carrinho();
 
+      // NOVO: Função para transformar URLs em links clicáveis na descrição
+      function formatarDescricaoComLinks(texto) {
+        if (!texto) {
+          return ""; // No carrinho, uma string vazia é melhor
+        }
+        // Regex para encontrar URLs
+        const urlRegex = /(https?:\/\/[^\s"'<>`]+)/g;
+        return texto.replace(
+          urlRegex,
+          '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-pink-500 hover:underline">$1</a>',
+        );
+      }
+
       // Função global para atualizar contador
       function atualizarContadorCarrinho() {
         carrinho.atualizarContador();
@@ -718,7 +732,7 @@
                         <div class="flex justify-between">
                             <div>
                                 <h3 class="font-semibold text-lg text-gray-800">${item.nome}</h3>
-                                <p class="text-gray-500 text-sm line-clamp-2">${item.descricao || ""}</p>
+                                <p class="text-gray-500 text-sm line-clamp-2">${formatarDescricaoComLinks(item.descricao)}</p>
                             </div>
                             <button class="text-gray-400 hover:text-red-500 transition p-2" onclick="removerItem(${index})" aria-label="Remover item">
                                 <i data-feather="trash-2" class="w-5 h-5"></i>
@@ -744,7 +758,7 @@
 
         // Atualizar resumo do pedido
         const subtotal = carrinho.getTotal();
-        const frete = 15.0;
+        const frete = carrinho.valorFrete;
         const desconto = carrinho.desconto || 0;
         const total = subtotal + frete - desconto;
 
@@ -878,7 +892,7 @@
           )
           .join("");
 
-        const total = carrinho.getTotal() + 15 - (carrinho.desconto || 0);
+        const total = carrinho.getTotalComDesconto();
         document.getElementById("resumo-total").textContent =
           `R$ ${total.toFixed(2).replace(".", ",")}`;
 
@@ -912,7 +926,7 @@
               id: resultado.numero_pedido,
               vendedor_telefone: resultado.vendedor_telefone,
               itens: [...carrinho.itens],
-              total: carrinho.getTotal() + 15 - (carrinho.desconto || 0),
+              total: carrinho.getTotalComDesconto(),
             };
 
             carrinho.limpar();
