@@ -267,7 +267,8 @@ function formatarDescricaoComLinks(texto) {
 }
 
 // NOVO: Função global para trocar imagem no carrossel (Duplicada para garantir funcionamento na Home)
-window.trocarImagem = function (btn, direcao) {
+window.trocarImagem = function (event, btn, direcao) {
+  event.stopPropagation(); // Evita propagação do clique
   // Encontra o container pai
   const container = btn.closest(".relative");
   const imgElement = container.querySelector("img");
@@ -286,9 +287,6 @@ window.trocarImagem = function (btn, direcao) {
   // Atualiza imagem e índice
   imgElement.src = imagens[newIndex];
   imgElement.setAttribute("data-index", newIndex);
-
-  // Evita propagação
-  event.stopPropagation();
 };
 
 // Carregar produtos em destaque
@@ -481,10 +479,10 @@ function renderizarProdutosDestaque(produtos) {
                         ${
                           temMultiplasImagens
                             ? `
-                            <button onclick="trocarImagem(this, -1)" class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 p-1 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                            <button onclick="trocarImagem(event, this, -1)" class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 p-1 rounded-full shadow-md opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-20">
                                 <i data-feather="chevron-left" class="w-5 h-5"></i>
                             </button>
-                            <button onclick="trocarImagem(this, 1)" class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 p-1 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                            <button onclick="trocarImagem(event, this, 1)" class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 p-1 rounded-full shadow-md opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-20">
                                 <i data-feather="chevron-right" class="w-5 h-5"></i>
                             </button>
                         `
