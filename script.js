@@ -286,7 +286,7 @@ function renderizarProdutos(produtosParaRenderizar) {
                         <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300"></div>
                     </div>
                     
-                    <div class="p-5">
+                    <div class="p-5 flex flex-col flex-1">
                         <div class="flex justify-between items-start mb-3">
                             <h3 class="font-bold text-lg text-gray-800 group-hover:text-pink-600 transition-colors flex-1 mr-2">
                                 ${produto.nome}
@@ -302,7 +302,7 @@ function renderizarProdutos(produtosParaRenderizar) {
                             ${formatarDescricaoComLinks(produto.descricao)}
                         </p>
                         
-                        <div class="flex justify-between items-center">
+                        <div class="flex justify-between items-center mt-auto">
                             <div class="flex flex-col">
                                 <span class="font-bold text-xl text-pink-500">
                                     R$ ${precoFinal
