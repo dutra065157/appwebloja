@@ -288,7 +288,7 @@ function renderizarProdutos(produtosParaRenderizar) {
                     
                     <div class="p-5">
                         <div class="flex justify-between items-start mb-3">
-                            <h3 class="font-bold text-lg text-gray-800 group-hover:text-pink-600 transition-colors line-clamp-2 flex-1 mr-2">
+                            <h3 class="font-bold text-lg text-gray-800 group-hover:text-pink-600 transition-colors flex-1 mr-2">
                                 ${produto.nome}
                             </h3>
                             <span class="bg-${produto.cor || "gray"}-100 text-${
@@ -298,7 +298,7 @@ function renderizarProdutos(produtosParaRenderizar) {
                             </span>
                         </div>
                         
-                        <p class="text-gray-500 text-sm mb-4 line-clamp-2 leading-relaxed">
+                        <p class="text-gray-500 text-sm mb-4 leading-relaxed">
                             ${formatarDescricaoComLinks(produto.descricao)}
                         </p>
                         
