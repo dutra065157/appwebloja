@@ -198,7 +198,7 @@
           <!-- Upload de Imagem -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2"
-              >🖼️ Imagem do Produto (opcional)</label
+              >🖼️ Imagens do Produto (Máx: 3)</label
             >
             <div
               class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center transition-colors hover:border-pink-400"
@@ -207,6 +207,7 @@
                 type="file"
                 id="imagemInput"
                 accept="image/*"
+                multiple
                 class="hidden"
                 onchange="previewImagem(event)"
               />
@@ -222,25 +223,18 @@
                     ></path>
                   </svg>
                 </div>
-                <p class="text-gray-600">Clique para selecionar uma imagem</p>
-                <p class="text-sm text-gray-500 mt-1">PNG, JPG, JPEG até 5MB</p>
+                <p class="text-gray-600">
+                  Clique para selecionar até 3 imagens
+                </p>
+                <p class="text-sm text-gray-500 mt-1">PNG, JPG, JPEG</p>
               </div>
 
               <!-- Preview da Imagem -->
-              <div id="previewContainer" class="hidden mt-4">
-                <div class="image-preview-container">
-                  <img
-                    id="imagemPreview"
-                    class="mx-auto max-h-64 rounded-lg shadow-md object-contain"
-                  />
-                  <div
-                    class="remove-image-btn"
-                    onclick="removerImagem()"
-                    title="Remover imagem"
-                  >
-                    ×
-                  </div>
-                </div>
+              <div
+                id="previewContainer"
+                class="hidden mt-4 grid grid-cols-3 gap-2"
+              >
+                <!-- Previews serão inseridos aqui via JS -->
               </div>
             </div>
             <p class="text-xs text-gray-500 mt-2">
@@ -378,7 +372,7 @@
       feather.replace();
 
       // Variável para armazenar a imagem em Base64
-      let imagemBase64 = null;
+      let imagensSelecionadas = [];
 
       // Função para fazer logout seguro
       function fazerLogout() {
@@ -459,47 +453,78 @@
 
       // Funções para manipulação de imagem
       function previewImagem(event) {
-        const file = event.target.files[0];
-        if (file) {
-          // Verificar tamanho (max 5MB)
-          if (file.size > 5 * 1024 * 1024) {
-            mostrarFeedback("❌ A imagem deve ter no máximo 5MB", "error");
-            return;
-          }
+        const files = Array.from(event.target.files);
 
-          // Verificar tipo
-          if (!file.type.match("image.*")) {
-            mostrarFeedback(
-              "❌ Por favor, selecione apenas arquivos de imagem",
-              "error",
-            );
-            return;
-          }
-
-          const reader = new FileReader();
-          reader.onload = function (e) {
-            imagemBase64 = e.target.result;
-
-            // Mostrar preview
-            const previewImg = document.getElementById("imagemPreview");
-            previewImg.src = imagemBase64;
-
-            // Mostrar container do preview
-            document
-              .getElementById("previewContainer")
-              .classList.remove("hidden");
-            document.getElementById("uploadArea").classList.add("hidden");
-          };
-          reader.readAsDataURL(file);
+        if (imagensSelecionadas.length + files.length > 3) {
+          mostrarFeedback("❌ Selecione no máximo 3 imagens", "error");
+          event.target.value = ""; // Limpa seleção
+          return;
         }
+
+        imagensSelecionadas.push(...files);
+        atualizarPreview();
+        event.target.value = ""; // Limpa input para permitir novas seleções
+      }
+
+      async function atualizarPreview() {
+        const container = document.getElementById("previewContainer");
+        container.innerHTML = "";
+
+        if (imagensSelecionadas.length > 0) {
+          container.classList.remove("hidden");
+          document.getElementById("uploadArea").classList.add("hidden");
+        } else {
+          container.classList.add("hidden");
+          document.getElementById("uploadArea").classList.remove("hidden");
+          return;
+        }
+
+        // Helper para ler arquivo
+        const readFile = (file) =>
+          new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.readAsDataURL(file);
+          });
+
+        // Carregar todas as imagens
+        const imageUrls = await Promise.all(imagensSelecionadas.map(readFile));
+
+        imageUrls.forEach((url, index) => {
+          const div = document.createElement("div");
+          div.className = "image-preview-container relative h-24";
+          div.innerHTML = `
+                <img src="${url}" class="w-full h-full object-cover rounded-lg shadow-md">
+                <div class="remove-image-btn absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center cursor-pointer shadow-sm" 
+                     onclick="removerImagemIndividual(${index})">×</div>
+            `;
+          container.appendChild(div);
+        });
+
+        // Botão para adicionar mais imagens (se menos de 3)
+        if (imagensSelecionadas.length < 3) {
+          const div = document.createElement("div");
+          div.className =
+            "h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:border-pink-500 hover:text-pink-500 text-gray-400 transition-colors";
+          div.innerHTML = `<i data-feather="plus" class="w-8 h-8"></i>`;
+          div.onclick = () => document.getElementById("imagemInput").click();
+          container.appendChild(div);
+        }
+
+        feather.replace();
       }
 
       function removerImagem() {
-        imagemBase64 = null;
+        imagensSelecionadas = [];
         document.getElementById("imagemInput").value = "";
-        document.getElementById("previewContainer").classList.add("hidden");
-        document.getElementById("uploadArea").classList.remove("hidden");
+        atualizarPreview();
       }
+
+      // Função auxiliar para limpar input (simplificada para este exemplo)
+      window.removerImagemIndividual = function (index) {
+        imagensSelecionadas.splice(index, 1);
+        atualizarPreview();
+      };
 
       // Permitir clicar na área de upload
       document
@@ -540,9 +565,10 @@
           );
 
           // Adicionar imagem se existir
-          const imagemFile = document.getElementById("imagemInput").files[0];
-          if (imagemFile) {
-            formData.append("imagem", imagemFile);
+          if (imagensSelecionadas.length > 0) {
+            imagensSelecionadas.forEach((file) => {
+              formData.append("imagens", file);
+            });
           }
 
           try {

@@ -118,6 +118,7 @@ const produtoSchema = new mongoose.Schema({
   categoria: { type: String, required: true },
   descricao: String,
   imagem_url: String,
+  imagens: [String], // Novo campo para múltiplas imagens
   icone: String,
   cor: String,
   cor_gradiente: String,
@@ -203,6 +204,19 @@ app.get("/api/produtos", async (req, res, next) => {
         }
         p.imagem_url = `${baseUrl}${caminhoImagem}`;
       }
+
+      // Normaliza o array de imagens também
+      if (p.imagens && p.imagens.length > 0) {
+        p.imagens = p.imagens.map((img) => {
+          if (!img.startsWith("http")) {
+            let caminho = img.replace(/\\/g, "/");
+            return caminho.startsWith("/")
+              ? `${baseUrl}${caminho}`
+              : `${baseUrl}/${caminho}`;
+          }
+          return img;
+        });
+      }
       return p;
     });
 
@@ -223,7 +237,7 @@ app.get("/api/produtos", async (req, res, next) => {
 app.post(
   "/api/produtos",
   authMiddleware,
-  upload.single("imagem"),
+  upload.array("imagens", 3), // Aceita até 3 imagens com o nome do campo 'imagens'
   async (req, res, next) => {
     try {
       const p = req.body;
@@ -233,11 +247,16 @@ app.post(
       const categoryStyles = getCategoryStyles(p.categoria);
 
       // Se houver arquivo, cria a URL relativa
-      let imagemUrl = null;
-      if (req.file) {
-        // Cloudinary retorna a URL completa na propriedade .path
-        imagemUrl = req.file.path;
-        console.log("📸 Upload realizado no Cloudinary:", imagemUrl);
+      let imagensUrls = [];
+
+      // Processa múltiplos arquivos (req.files)
+      if (req.files && req.files.length > 0) {
+        imagensUrls = req.files.map((file) => file.path);
+        console.log("📸 Uploads realizados:", imagensUrls);
+      }
+      // Fallback para upload único antigo (req.file) caso o frontend antigo envie
+      else if (req.file) {
+        imagensUrls.push(req.file.path);
       }
 
       // Helpers para converter números (trata vírgula e ponto e evita NaN)
@@ -259,7 +278,8 @@ app.post(
         preco_original: parseNumOpt(p.preco_original),
         categoria: p.categoria,
         descricao: p.descricao,
-        imagem_url: imagemUrl,
+        imagem_url: imagensUrls.length > 0 ? imagensUrls[0] : null, // Mantém compatibilidade
+        imagens: imagensUrls, // Salva todas as imagens
         icone: categoryStyles.icone,
         cor: categoryStyles.cor,
         cor_gradiente: categoryStyles.cor_gradiente,

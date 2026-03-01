@@ -266,6 +266,31 @@ function formatarDescricaoComLinks(texto) {
   );
 }
 
+// NOVO: Função global para trocar imagem no carrossel (Duplicada para garantir funcionamento na Home)
+window.trocarImagem = function (btn, direcao) {
+  // Encontra o container pai
+  const container = btn.closest(".relative");
+  const imgElement = container.querySelector("img");
+
+  // Recupera dados
+  const imagens = imgElement.getAttribute("data-images").split(",");
+  let currentIndex = parseInt(imgElement.getAttribute("data-index") || "0");
+
+  // Calcula novo índice
+  let newIndex = currentIndex + direcao;
+
+  // Loop infinito
+  if (newIndex >= imagens.length) newIndex = 0;
+  if (newIndex < 0) newIndex = imagens.length - 1;
+
+  // Atualiza imagem e índice
+  imgElement.src = imagens[newIndex];
+  imgElement.setAttribute("data-index", newIndex);
+
+  // Evita propagação
+  event.stopPropagation();
+};
+
 // Carregar produtos em destaque
 async function carregarProdutosEmDestaque(forcarCache = false) {
   const container = document.getElementById("featured-products");
@@ -377,23 +402,26 @@ function renderizarProdutosDestaque(produtos) {
 
   container.innerHTML = produtos
     .map((produto, index) => {
-      const temImagem = !!produto.imagem_url;
-      // Ajuste: Construir a URL completa da imagem usando a API_BASE_URL
-      let imagemSrc = "";
-      if (temImagem) {
-        // Se a imagem já vier com http (do backend corrigido), usa ela direto
-        if (produto.imagem_url.startsWith("http")) {
-          imagemSrc = produto.imagem_url;
-        } else {
-          // Senão, adiciona a URL base se ela existir
-          const path = produto.imagem_url.startsWith("/")
-            ? produto.imagem_url
-            : `/${produto.imagem_url}`;
-          imagemSrc = window.API_BASE_URL
-            ? `${window.API_BASE_URL}${path}`
-            : path;
-        }
+      // Lógica para múltiplas imagens
+      let imagensLista = [];
+
+      if (produto.imagens && produto.imagens.length > 0) {
+        imagensLista = produto.imagens;
+      } else if (produto.imagem_url) {
+        imagensLista = [produto.imagem_url];
       }
+
+      // Normaliza URLs
+      imagensLista = imagensLista.map((url) => {
+        if (url.startsWith("http")) return url;
+        const path = url.startsWith("/") ? url : `/${url}`;
+        return window.API_BASE_URL ? `${window.API_BASE_URL}${path}` : path;
+      });
+
+      const temImagem = imagensLista.length > 0;
+      const imagemPrincipal = temImagem ? imagensLista[0] : "";
+      const temMultiplasImagens = imagensLista.length > 1;
+      const listaImagensStr = imagensLista.join(",");
 
       // Determinar badges
       const badges = [];
@@ -433,9 +461,12 @@ function renderizarProdutosDestaque(produtos) {
                         <!-- Imagem do produto ou placeholder com gradiente -->
                         ${
                           temImagem
-                            ? `<img src="${imagemSrc}" 
+                            ? `<img src="${imagemPrincipal}" 
                                   alt="${produto.nome}" 
-                                  class="w-full h-64 md:h-80 object-contain bg-white group-hover:scale-110 transition-transform duration-500 product-image">`
+                                  data-images="${listaImagensStr}"
+                                  data-index="0"
+                                  crossorigin="anonymous"
+                                  class="w-full h-64 md:h-80 object-contain bg-white transition-transform duration-500 product-image">`
                             : `<div class="w-full h-64 md:h-80 ${
                                 produto.cor_gradiente ||
                                 "from-gray-400 to-gray-600"
@@ -446,6 +477,20 @@ function renderizarProdutosDestaque(produtos) {
                             </div>`
                         }
                         
+                        <!-- Setas de Navegação (Só aparecem se tiver > 1 imagem) -->
+                        ${
+                          temMultiplasImagens
+                            ? `
+                            <button onclick="trocarImagem(this, -1)" class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 p-1 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                                <i data-feather="chevron-left" class="w-5 h-5"></i>
+                            </button>
+                            <button onclick="trocarImagem(this, 1)" class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 p-1 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                                <i data-feather="chevron-right" class="w-5 h-5"></i>
+                            </button>
+                        `
+                            : ""
+                        }
+
                         <!-- Badges Container -->
                         <div class="absolute top-3 right-3 flex flex-col space-y-2">
                             ${badges.join("")}

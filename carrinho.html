@@ -710,7 +710,7 @@
                   ? `${baseUrl}${src}`
                   : `${baseUrl}/${src}`;
               }
-              imagemHtml = `<img src="${src}" alt="${item.nome}" class="w-full h-full object-contain bg-white rounded-lg shadow-sm">`;
+              imagemHtml = `<img src="${src}" alt="${item.nome}" crossorigin="anonymous" class="w-full h-full object-contain bg-white rounded-lg shadow-sm">`;
             } else {
               const gradiente =
                 item.cor_gradiente ||
